@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import Navbar from './components/Navbar'
+import ProtectedRoute from './components/ProtectedRoute'
 
 import LoginPage from './pages/LoginPage'
 import RegisterPage from './pages/RegisterPage'
@@ -19,9 +20,21 @@ function App() {
         <Route path='/register' element={<RegisterPage />} />
         <Route path='/products' element={<ProductsPage />} />
         <Route path='/products/:id' element={<ProductDetailPage />} />
-        <Route path='/cart' element={<CartPage />} />
-        <Route path='/profile' element={<ProfilePage />} />
-        <Route path='/admin' element={<AdminPage />} />
+        <Route path='/cart' element={
+          <ProtectedRoute>
+            <CartPage />
+          </ProtectedRoute>
+        } />
+        <Route path='/profile' element={
+          <ProtectedRoute>
+            <ProfilePage />
+          </ProtectedRoute>
+        } />
+        <Route path='/admin' element={
+          <ProtectedRoute adminOnly={true}>
+            <AdminPage />
+          </ProtectedRoute>
+        } />
       </Routes>
     </BrowserRouter>
   )
