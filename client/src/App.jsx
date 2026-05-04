@@ -1,6 +1,8 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { useState } from 'react'
 import Navbar from './components/Navbar'
 import ProtectedRoute from './components/ProtectedRoute'
+import CartSidebar from './components/CartSidebar'
 
 import LoginPage from './pages/LoginPage'
 import RegisterPage from './pages/RegisterPage'
@@ -11,9 +13,33 @@ import ProfilePage from './pages/ProfilePage'
 import AdminPage from './pages/AdminPage'
 
 function App() {
+  const [cartOpen, setCartOpen] = useState(false)
+
   return (
     <BrowserRouter>
+      <CartSidebar isOpen={cartOpen} onClose={() => setCartOpen(false)} />
       <Navbar />
+
+      {/* temporary test button — remove once Shraddha connects cart icon in Navbar */}
+      {!cartOpen && (
+          <button
+            onClick={() => setCartOpen(true)}
+            style={{
+              position: 'fixed',
+              bottom: 24,
+              right: 24,
+              zIndex: 200,
+              background: '#5BBF9A',
+              border: 'none',
+              padding: '12px 20px',
+              borderRadius: '999px',
+              fontWeight: '700',
+              cursor: 'pointer'
+          }}>
+          Open Cart
+        </button>
+      )}
+
       <Routes>
         <Route path='/' element={<ProductsPage />} />
         <Route path='/login' element={<LoginPage />} />
@@ -24,7 +50,7 @@ function App() {
           <ProtectedRoute>
             <CartPage />
           </ProtectedRoute>
-        } /> 
+        } />
         <Route path='/profile' element={
           <ProtectedRoute>
             <ProfilePage />
