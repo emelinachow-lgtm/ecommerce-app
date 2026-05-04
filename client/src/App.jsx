@@ -59,12 +59,11 @@ function App() {
             <ProfilePage />
           </ProtectedRoute>
         } />
-        {/* <Route path='/admin' element={
+        <Route path='/admin' element={
           <ProtectedRoute adminOnly={true}>
             <AdminPage />
           </ProtectedRoute>
-        } /> */}
-        <Route path='/admin' element={<AdminPage />} />
+        } /> 
       </Routes>
     </BrowserRouter>
   )
