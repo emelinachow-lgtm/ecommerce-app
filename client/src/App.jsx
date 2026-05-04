@@ -49,11 +49,12 @@ function App() {
         <Route path='/register' element={<RegisterPage />} />
         <Route path='/products' element={<ProductsPage />} />
         <Route path='/products/:id' element={<ProductDetailPage />} />
-        <Route path='/cart' element={
+        {/* <Route path='/cart' element={
           <ProtectedRoute>
             <CartPage />
           </ProtectedRoute>
-        } />
+        } /> */}
+        <Route path='/cart' element={<CartPage />} />
         <Route path='/profile' element={
           <ProtectedRoute>
             <ProfilePage />

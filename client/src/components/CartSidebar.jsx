@@ -28,7 +28,6 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 
-// temporary dummy data until API is connected in Week 3
 const dummyCart = {
   items: [
     {
@@ -60,12 +59,10 @@ function CartSidebar({ isOpen, onClose }) {
   const [cart, setCart] = useState(dummyCart)
   const navigate = useNavigate()
 
-  // calculate subtotal
   const subtotal = cart.items.reduce(
     (sum, item) => sum + item.product.price * item.quantity, 0
   )
 
-  // update item quantity
   const handleQuantityChange = (itemId, newQty) => {
     if (newQty < 1) return
     setCart(prev => ({
@@ -74,25 +71,20 @@ function CartSidebar({ isOpen, onClose }) {
         item._id === itemId ? { ...item, quantity: newQty } : item
       )
     }))
-    // TODO Week 3: await api.put(`/cart/${itemId}`, { quantity: newQty })
   }
 
-  // remove item from cart
   const handleRemove = (itemId) => {
     setCart(prev => ({
       ...prev,
       items: prev.items.filter(item => item._id !== itemId)
     }))
-    // TODO Week 3: await api.delete(`/cart/${itemId}`)
   }
 
-  // go to full cart page and close sidebar
   const handleViewCart = () => {
     onClose()
     navigate('/cart')
   }
 
-  // prevent background scroll when sidebar is open
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = 'hidden'
@@ -108,7 +100,6 @@ function CartSidebar({ isOpen, onClose }) {
 
   return (
     <>
-      {/* dark overlay behind sidebar */}
       <div
         onClick={onClose}
         style={{
@@ -122,39 +113,39 @@ function CartSidebar({ isOpen, onClose }) {
         }}
       />
 
-      {/* sidebar panel */}
       <div style={{
         position: 'fixed',
         top: 0,
         right: 0,
         bottom: 0,
-        width: '420px',
+        width: '440px',
         background: '#FFFFFF',
         zIndex: 101,
         display: 'flex',
         flexDirection: 'column',
-        boxShadow: '-4px 0 24px rgba(0,0,0,0.1)'
+        boxShadow: '-4px 0 30px rgba(0,0,0,0.1)'
       }}>
 
         {/* header */}
         <div style={{
-          padding: '24px 24px 16px',
-          borderBottom: '1.5px solid #1A1A1A'
+          padding: '28px 28px 20px',
+          borderBottom: '2px solid #1A1A1A'
         }}>
           <p style={{
-            fontSize: '22px',
-            fontWeight: '900',
+            fontSize: '50px',
+            fontWeight: '400',
             color: '#1A1A1A',
             textTransform: 'uppercase',
             letterSpacing: '0.02em',
-            margin: 0
+            margin: 0,
+            fontFamily: 'Jomhuria, serif',
+            lineHeight: 1
           }}>Your Cart</p>
         </div>
 
         {/* cart items or empty state */}
-        <div style={{ flex: 1, overflowY: 'auto', padding: '16px 24px' }}>
+        <div style={{ flex: 1, overflowY: 'auto', padding: '20px 28px' }}>
           {cart.items.length === 0 ? (
-            /* empty state */
             <div style={{
               display: 'flex',
               flexDirection: 'column',
@@ -164,9 +155,9 @@ function CartSidebar({ isOpen, onClose }) {
               gap: '16px',
               textAlign: 'center'
             }}>
-              <div style={{ fontSize: '48px' }}>🛒</div>
+              <div style={{ fontSize: '56px' }}>🛒</div>
               <p style={{
-                fontSize: '16px',
+                fontSize: '30px',
                 fontWeight: '900',
                 color: '#1A1A1A',
                 textTransform: 'uppercase',
@@ -179,9 +170,9 @@ function CartSidebar({ isOpen, onClose }) {
                   background: '#C5EBDA',
                   color: '#1A1A1A',
                   border: 'none',
-                  padding: '10px 24px',
+                  padding: '14px 32px',
                   borderRadius: '999px',
-                  fontSize: '11px',
+                  fontSize: '16px',
                   fontWeight: '700',
                   textTransform: 'uppercase',
                   letterSpacing: '0.05em',
@@ -191,35 +182,32 @@ function CartSidebar({ isOpen, onClose }) {
               </button>
             </div>
           ) : (
-            /* cart items */
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
               {cart.items.map(item => (
                 <div key={item._id} style={{
                   display: 'flex',
                   alignItems: 'flex-start',
-                  gap: '12px',
+                  gap: '14px',
                   background: '#F5F5CC',
-                  borderRadius: '12px',
-                  padding: '14px'
+                  borderRadius: '14px',
+                  padding: '16px'
                 }}>
 
-                  {/* product image */}
                   <img
                     src={item.product.image}
                     alt={item.product.name}
                     style={{
-                      width: '64px',
-                      height: '64px',
+                      width: '80px',
+                      height: '80px',
                       objectFit: 'cover',
-                      borderRadius: '6px',
+                      borderRadius: '8px',
                       flexShrink: 0
                     }}
                   />
 
-                  {/* product info + controls */}
                   <div style={{ flex: 1, minWidth: 0 }}>
 
-                    {/* name + price on same line */}
+                    {/* name + price */}
                     <div style={{
                       display: 'flex',
                       justifyContent: 'space-between',
@@ -227,15 +215,17 @@ function CartSidebar({ isOpen, onClose }) {
                       marginBottom: '2px'
                     }}>
                       <p style={{
-                        fontSize: '13px',
-                        fontWeight: '900',
+                        fontSize: '34px',
+                        fontWeight: '400',
                         color: '#1A1A1A',
                         textTransform: 'uppercase',
                         letterSpacing: '0.02em',
-                        margin: 0
+                        margin: 0,
+                        fontFamily: 'Jomhuria, serif',
+                        lineHeight: .75
                       }}>{item.product.name}</p>
                       <p style={{
-                        fontSize: '13px',
+                        fontSize: '18px',
                         fontWeight: '700',
                         color: '#1A1A1A',
                         margin: 0,
@@ -246,7 +236,7 @@ function CartSidebar({ isOpen, onClose }) {
 
                     {/* roaster */}
                     <p style={{
-                      fontSize: '11px',
+                      fontSize: '16px',
                       fontWeight: '700',
                       color: '#1A1A1A',
                       textTransform: 'uppercase',
@@ -256,68 +246,66 @@ function CartSidebar({ isOpen, onClose }) {
 
                     {/* variant */}
                     <p style={{
-                      fontSize: '11px',
+                      fontSize: '15px',
                       color: '#6B6B6B',
-                      margin: '0 0 10px',
+                      margin: '0 0 12px',
                       textAlign: 'left'
                     }}>{item.product.variant}</p>
 
-                    {/* quantity controls + remove */}
+                    {/* quantity + remove */}
                     <div style={{
-                        display: 'flex',
-                        alignItems: 'flex-start',
-                        justifyContent: 'space-between'
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between'
                     }}>
-                      {/* qty controls */}
-                        <div style={{
+                      <div style={{
                         display: 'flex',
                         alignItems: 'center',
                         background: '#C5EBDA',
                         borderRadius: '999px',
-                        padding: '4px 12px',
-                        gap: '12px'
-                        }}>
+                        padding: '6px 16px',
+                        gap: '16px'
+                      }}>
                         <button
-                            onClick={() => handleQuantityChange(item._id, item.quantity - 1)}
-                            style={{
+                          onClick={() => handleQuantityChange(item._id, item.quantity - 1)}
+                          style={{
                             background: 'none',
                             border: 'none',
                             cursor: 'pointer',
-                            fontSize: '16px',
+                            fontSize: '22px',
                             color: '#1A1A1A',
                             fontWeight: '700',
                             padding: 0,
                             lineHeight: 1
-                            }}>−</button>
+                          }}>−</button>
                         <span style={{
-                            fontSize: '13px',
-                            fontWeight: '700',
-                            color: '#1A1A1A',
-                            minWidth: '16px',
-                            textAlign: 'center'
+                          fontSize: '18px',
+                          fontWeight: '700',
+                          color: '#1A1A1A',
+                          minWidth: '20px',
+                          textAlign: 'center'
                         }}>{item.quantity}</span>
                         <button
-                            onClick={() => handleQuantityChange(item._id, item.quantity + 1)}
-                            style={{
+                          onClick={() => handleQuantityChange(item._id, item.quantity + 1)}
+                          style={{
                             background: 'none',
                             border: 'none',
                             cursor: 'pointer',
-                            fontSize: '16px',
+                            fontSize: '22px',
                             color: '#1A1A1A',
                             fontWeight: '700',
                             padding: 0,
                             lineHeight: 1
-                            }}>+</button>
-                        </div>
+                          }}>+</button>
+                      </div>
 
-                      {/* remove */}
                       <button
                         onClick={() => handleRemove(item._id)}
                         style={{
                           background: 'none',
                           border: 'none',
                           cursor: 'pointer',
-                          fontSize: '11px',
+                          fontSize: '15px',
                           color: '#6B6B6B',
                           textDecoration: 'underline',
                           padding: 0
@@ -330,13 +318,12 @@ function CartSidebar({ isOpen, onClose }) {
           )}
         </div>
 
-        {/* footer — only shows when cart has items */}
+        {/* footer */}
         {cart.items.length > 0 && (
           <div style={{
-            padding: '16px 24px 24px',
-            borderTop: '1.5px solid #1A1A1A'
+            padding: '20px 28px 28px',
+            borderTop: '2px solid #1A1A1A'
           }}>
-            {/* subtotal row */}
             <div style={{
               display: 'flex',
               justifyContent: 'space-between',
@@ -344,32 +331,30 @@ function CartSidebar({ isOpen, onClose }) {
               marginBottom: '4px'
             }}>
               <span style={{
-                fontSize: '16px',
+                fontSize: '22px',
                 fontWeight: '700',
                 color: '#1A1A1A'
               }}>Subtotal</span>
               <span style={{
-                fontSize: '18px',
+                fontSize: '22px',
                 fontWeight: '900',
                 color: '#1A1A1A'
               }}>${subtotal.toFixed(2)} AUD</span>
             </div>
 
-            {/* tax note */}
             <p style={{
-              fontSize: '11px',
+              fontSize: '14px',
               color: '#6B6B6B',
               margin: '0 0 16px'
             }}>Tax included. Shipping calculated at checkout.</p>
 
-            {/* checkout button */}
             <button style={{
               background: '#C5EBDA',
               color: '#1A1A1A',
               border: 'none',
-              padding: '14px 24px',
+              padding: '18px 30px',
               borderRadius: '999px',
-              fontSize: '13px',
+              fontSize: '18px',
               fontWeight: '900',
               textTransform: 'uppercase',
               letterSpacing: '0.06em',
@@ -378,7 +363,6 @@ function CartSidebar({ isOpen, onClose }) {
               marginBottom: '12px'
             }}>Check Out</button>
 
-            {/* view cart link */}
             <div style={{ textAlign: 'center' }}>
               <button
                 onClick={handleViewCart}
@@ -386,7 +370,7 @@ function CartSidebar({ isOpen, onClose }) {
                   background: 'none',
                   border: 'none',
                   cursor: 'pointer',
-                  fontSize: '12px',
+                  fontSize: '16px',
                   fontWeight: '700',
                   color: '#1A1A1A',
                   textDecoration: 'underline',

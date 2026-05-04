@@ -23,7 +23,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
-// temporary dummy data until API is connected in Week 3
 const dummyCart = {
   items: [
     {
@@ -57,12 +56,10 @@ function CartPage() {
   const [notes, setNotes] = useState('')
   const navigate = useNavigate()
 
-  // calculate running total
   const total = cart.items.reduce(
     (sum, item) => sum + item.product.price * item.quantity, 0
   )
 
-  // update item quantity
   const handleQuantityChange = (itemId, newQty) => {
     if (newQty < 1) return
     setCart(prev => ({
@@ -74,7 +71,6 @@ function CartPage() {
     // TODO Week 3: await api.put(`/cart/${itemId}`, { quantity: newQty })
   }
 
-  // remove item from cart
   const handleRemove = (itemId) => {
     setCart(prev => ({
       ...prev,
@@ -97,14 +93,16 @@ function CartPage() {
         padding: '24px',
         background: '#FAFAF5'
       }}>
-        <div style={{ fontSize: '48px' }}>🛒</div>
+        <div style={{ fontSize: '56px' }}>🛒</div>
         <p style={{
-          fontSize: '22px',
-          fontWeight: '900',
+          fontSize: '50px',
+          fontWeight: '400',
           color: '#1A1A1A',
           textTransform: 'uppercase',
           letterSpacing: '0.02em',
-          margin: 0
+          margin: 0,
+          fontFamily: 'Jomhuria, serif',
+          lineHeight: 1
         }}>Your cart is empty :(</p>
         <button
           onClick={() => navigate('/products')}
@@ -112,9 +110,9 @@ function CartPage() {
             background: '#C5EBDA',
             color: '#1A1A1A',
             border: 'none',
-            padding: '12px 32px',
+            padding: '14px 36px',
             borderRadius: '999px',
-            fontSize: '12px',
+            fontSize: '16px',
             fontWeight: '700',
             textTransform: 'uppercase',
             letterSpacing: '0.05em',
@@ -130,25 +128,30 @@ function CartPage() {
     <div style={{
       maxWidth: '960px',
       margin: '0 auto',
-      padding: '40px 24px',
+      padding: '40px 28px',
       background: '#FAFAF5',
       minHeight: '100vh'
     }}>
+
+      {/* page heading */}
       <h1 style={{
-        fontSize: '32px',
-        fontWeight: '900',
+        fontSize: '50px',
+        fontWeight: '400',
         color: '#1A1A1A',
         textTransform: 'uppercase',
         letterSpacing: '0.02em',
-        margin: '0 0 8px'
+        margin: '0 0 4px',
+        fontFamily: 'Jomhuria, serif',
+        lineHeight: 1
       }}>Your Cart</h1>
 
       {/* column headers */}
       <div style={{
         display: 'grid',
         gridTemplateColumns: '1fr 300px 120px',
-        padding: '10px 16px',
-        marginBottom: '8px'
+        padding: '12px 16px',
+        marginBottom: '8px',
+        borderBottom: '2px solid #1A1A1A'
       }}>
         <span style={headerStyle}>Product</span>
         <span style={{ ...headerStyle, textAlign: 'center' }}>Quantity</span>
@@ -156,7 +159,7 @@ function CartPage() {
       </div>
 
       {/* cart items */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '24px' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', marginBottom: '28px' }}>
         {cart.items.map(item => (
           <div key={item._id} style={{
             display: 'grid',
@@ -164,39 +167,41 @@ function CartPage() {
             alignItems: 'center',
             background: '#F5F5CC',
             borderRadius: '16px',
-            padding: '16px'
+            padding: '18px'
           }}>
 
             {/* product info */}
-            <div style={{ display: 'flex', alignItems: 'flex-start', gap: '14px' }}>
+            <div style={{ display: 'flex', alignItems: 'flex-start', gap: '16px' }}>
               <img
                 src={item.product.image}
                 alt={item.product.name}
                 style={{
-                  width: '72px',
-                  height: '72px',
+                  width: '80px',
+                  height: '80px',
                   objectFit: 'cover',
                   borderRadius: '8px'
                 }}
               />
               <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: '2px' }}>
                 <p style={{
-                  fontSize: '14px',
-                  fontWeight: '900',
+                  fontSize: '34px',
+                  fontWeight: '400',
                   color: '#1A1A1A',
                   textTransform: 'uppercase',
                   letterSpacing: '0.02em',
-                  margin: 0
+                  margin: 0,
+                  fontFamily: 'Jomhuria, serif',
+                  lineHeight: 0.75
                 }}>{item.product.name}</p>
                 <p style={{
-                  fontSize: '12px',
+                  fontSize: '16px',
                   fontWeight: '700',
                   color: '#1A1A1A',
                   textTransform: 'uppercase',
                   margin: 0
                 }}>{item.product.roaster}</p>
                 <p style={{
-                  fontSize: '12px',
+                  fontSize: '15px',
                   color: '#6B6B6B',
                   margin: 0
                 }}>{item.product.variant}</p>
@@ -208,7 +213,7 @@ function CartPage() {
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              gap: '12px'
+              gap: '14px'
             }}>
               <div style={{
                 display: 'flex',
@@ -224,14 +229,14 @@ function CartPage() {
                     background: 'none',
                     border: 'none',
                     cursor: 'pointer',
-                    fontSize: '18px',
+                    fontSize: '22px',
                     color: '#1A1A1A',
                     fontWeight: '700',
                     padding: '0',
                     lineHeight: 1
                   }}>−</button>
                 <span style={{
-                  fontSize: '16px',
+                  fontSize: '18px',
                   fontWeight: '700',
                   color: '#1A1A1A',
                   minWidth: '20px',
@@ -243,7 +248,7 @@ function CartPage() {
                     background: 'none',
                     border: 'none',
                     cursor: 'pointer',
-                    fontSize: '18px',
+                    fontSize: '22px',
                     color: '#1A1A1A',
                     fontWeight: '700',
                     padding: '0',
@@ -256,7 +261,7 @@ function CartPage() {
                   background: 'none',
                   border: 'none',
                   cursor: 'pointer',
-                  fontSize: '12px',
+                  fontSize: '15px',
                   color: '#6B6B6B',
                   textDecoration: 'underline',
                   padding: 0
@@ -265,7 +270,7 @@ function CartPage() {
 
             {/* line total */}
             <p style={{
-              fontSize: '16px',
+              fontSize: '20px',
               fontWeight: '700',
               color: '#1A1A1A',
               textAlign: 'right',
@@ -277,7 +282,7 @@ function CartPage() {
       </div>
 
       {/* divider */}
-      <div style={{ height: '1px', background: '#E8E8E4', marginBottom: '20px' }} />
+      <div style={{ height: '1px', background: '#E8E8E4', marginBottom: '24px' }} />
 
       {/* bottom row */}
       <div style={{
@@ -292,7 +297,7 @@ function CartPage() {
             background: 'none',
             border: 'none',
             cursor: 'pointer',
-            fontSize: '12px',
+            fontSize: '16px',
             fontWeight: '700',
             color: '#1A1A1A',
             textDecoration: 'underline',
@@ -304,7 +309,7 @@ function CartPage() {
         </button>
 
         {/* totals + checkout */}
-        <div style={{ textAlign: 'right', minWidth: '280px' }}>
+        <div style={{ textAlign: 'right', minWidth: '300px' }}>
 
           {/* add notes */}
           <div
@@ -317,11 +322,11 @@ function CartPage() {
               marginBottom: '12px'
             }}>
             <span style={{
-              fontSize: '13px',
+              fontSize: '18px',
               color: '#1A1A1A'
             }}>Add Notes</span>
             <span style={{
-              fontSize: '20px',
+              fontSize: '24px',
               color: '#1A1A1A',
               fontWeight: '300'
             }}>{notesOpen ? '−' : '+'}</span>
@@ -337,7 +342,7 @@ function CartPage() {
                 border: '0.5px solid #E8E8E4',
                 borderRadius: '8px',
                 padding: '10px',
-                fontSize: '12px',
+                fontSize: '15px',
                 fontFamily: 'inherit',
                 color: '#1A1A1A',
                 background: '#FFFFFF',
@@ -356,11 +361,11 @@ function CartPage() {
             marginBottom: '16px'
           }}>
             <span style={{
-              fontSize: '14px',
+              fontSize: '18px',
               color: '#1A1A1A'
             }}>{cart.items.length} item{cart.items.length !== 1 ? 's' : ''}</span>
             <span style={{
-              fontSize: '20px',
+              fontSize: '22px',
               fontWeight: '900',
               color: '#1A1A1A'
             }}>${total.toFixed(2)} AUD</span>
@@ -371,9 +376,9 @@ function CartPage() {
             background: '#C5EBDA',
             color: '#1A1A1A',
             border: 'none',
-            padding: '14px 32px',
+            padding: '18px 32px',
             borderRadius: '999px',
-            fontSize: '13px',
+            fontSize: '18px',
             fontWeight: '900',
             textTransform: 'uppercase',
             letterSpacing: '0.06em',
@@ -387,7 +392,7 @@ function CartPage() {
 }
 
 const headerStyle = {
-  fontSize: '10px',
+  fontSize: '15px',
   fontWeight: '700',
   color: '#1A1A1A',
   textTransform: 'uppercase',
