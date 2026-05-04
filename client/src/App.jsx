@@ -18,7 +18,10 @@ function App() {
   return (
     <BrowserRouter>
       <CartSidebar isOpen={cartOpen} onClose={() => setCartOpen(false)} />
-      <Navbar />
+      <Routes>
+        <Route path='/admin/*' element={null} />
+        <Route path='*' element={<Navbar />} />
+      </Routes>
 
       {/* temporary test button — remove once Shraddha connects cart icon in Navbar */}
       {!cartOpen && (
@@ -29,7 +32,7 @@ function App() {
               bottom: 24,
               right: 24,
               zIndex: 200,
-              background: '#5BBF9A',
+              background: '#C5EBDA',
               border: 'none',
               padding: '12px 20px',
               borderRadius: '999px',
@@ -56,11 +59,12 @@ function App() {
             <ProfilePage />
           </ProtectedRoute>
         } />
-        <Route path='/admin' element={
+        {/* <Route path='/admin' element={
           <ProtectedRoute adminOnly={true}>
             <AdminPage />
           </ProtectedRoute>
-        } />
+        } /> */}
+        <Route path='/admin' element={<AdminPage />} />
       </Routes>
     </BrowserRouter>
   )

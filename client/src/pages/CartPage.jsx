@@ -109,7 +109,7 @@ function CartPage() {
         <button
           onClick={() => navigate('/products')}
           style={{
-            background: '#5BBF9A',
+            background: '#C5EBDA',
             color: '#1A1A1A',
             border: 'none',
             padding: '12px 32px',
@@ -213,7 +213,7 @@ function CartPage() {
               <div style={{
                 display: 'flex',
                 alignItems: 'center',
-                background: '#5BBF9A',
+                background: '#C5EBDA',
                 borderRadius: '999px',
                 padding: '6px 16px',
                 gap: '16px'
@@ -368,7 +368,7 @@ function CartPage() {
 
           {/* checkout button */}
           <button style={{
-            background: '#5BBF9A',
+            background: '#C5EBDA',
             color: '#1A1A1A',
             border: 'none',
             padding: '14px 32px',
