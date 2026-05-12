@@ -313,6 +313,20 @@ function RegisterPage() {
           }}>Log in</Link>
         </p>
 
+        {/* sign up link */}
+        <p style={{
+          fontSize: '15px',
+          color: '#1A1A1A',
+          textAlign: 'center',
+          margin: 0
+        }}>
+          Don't have an account?{' '}
+          <Link to="/register" style={{
+            color: '#2980B9',
+            fontWeight: '700',
+            textDecoration: 'none'
+          }}>Sign up</Link>
+        </p>
       </div>
     </div>
   )
