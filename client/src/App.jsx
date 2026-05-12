@@ -21,7 +21,8 @@ function App() {
       <CartSidebar isOpen={cartOpen} onClose={() => setCartOpen(false)} />
       <Routes>
         <Route path='/admin/*' element={null} />
-        <Route path='*' element={<Navbar />} />
+        <Route path='*' element={<Navbar onCartOpen={() => setCartOpen(true)} />} />
+
       </Routes>
 
       {/* temporary test button — remove once Shraddha connects cart icon in Navbar */}
