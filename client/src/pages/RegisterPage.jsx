@@ -15,12 +15,13 @@
   FLOW:
   - User submits name, email, password, confirm password
   - Validates passwords match before submitting
-  - On success: call login() from useAuth, redirect to /
+  - On success: call login() from useAuth, redirect to /products
   - On failure: show error message below form
+  - If already logged in: redirect to /products automatically
 */
 
 import { useState } from 'react'
-import { useNavigate, Link } from 'react-router-dom'
+import { useNavigate, Link, Navigate } from 'react-router-dom'
 import { useAuth } from '../context/useAuth'
 import api from '../api'
 import coffeeBean from '../assets/coffee-bean.png'
@@ -52,26 +53,26 @@ function RegisterPage() {
   const [confirmPassword, setConfirmPassword] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
-  const { login } = useAuth()
+  const { login, token } = useAuth()
   const navigate = useNavigate()
+
+  // if already logged in redirect to products
+  if (token) return <Navigate to='/products' />
 
   const handleSubmit = async (e) => {
     e.preventDefault()
     setError('')
 
-    // validate all fields
     if (!name || !email || !password || !confirmPassword) {
       setError('Please fill in all fields')
       return
     }
 
-    // validate passwords match
     if (password !== confirmPassword) {
       setError('Passwords do not match')
       return
     }
 
-    // validate password length
     if (password.length < 8) {
       setError('Password must be at least 8 characters')
       return
@@ -81,7 +82,7 @@ function RegisterPage() {
       setLoading(true)
       const res = await api.post('/auth/register', { name, email, password })
       login(res.data.user, res.data.token)
-      navigate('/')
+      navigate('/products')
     } catch (err) {
       setError(err.response?.data?.message || 'Something went wrong. Please try again.')
     } finally {
@@ -162,7 +163,6 @@ function RegisterPage() {
 
         <form onSubmit={handleSubmit}>
 
-          {/* full name */}
           <div style={{ marginBottom: '16px' }}>
             <label style={labelStyle}>Full Name</label>
             <input
@@ -174,7 +174,6 @@ function RegisterPage() {
             />
           </div>
 
-          {/* email */}
           <div style={{ marginBottom: '16px' }}>
             <label style={labelStyle}>Email</label>
             <input
@@ -186,7 +185,6 @@ function RegisterPage() {
             />
           </div>
 
-          {/* password */}
           <div style={{ marginBottom: '16px' }}>
             <label style={labelStyle}>Password</label>
             <input
@@ -198,7 +196,6 @@ function RegisterPage() {
             />
           </div>
 
-          {/* confirm password */}
           <div style={{ marginBottom: '24px' }}>
             <label style={labelStyle}>Confirm Password</label>
             <input
@@ -210,7 +207,6 @@ function RegisterPage() {
             />
           </div>
 
-          {/* create account button */}
           <button
             type="submit"
             disabled={loading}

@@ -22,56 +22,37 @@ function App() {
       <Routes>
         <Route path='/admin/*' element={null} />
         <Route path='*' element={<Navbar onCartOpen={() => setCartOpen(true)} />} />
-
       </Routes>
 
-      {/* temporary test button — remove once Shraddha connects cart icon in Navbar */}
-      {!cartOpen && (
-          <button
-            onClick={() => setCartOpen(true)}
-            style={{
-              position: 'fixed',
-              bottom: 24,
-              right: 24,
-              zIndex: 200,
-              background: '#C5EBDA',
-              border: 'none',
-              padding: '12px 20px',
-              borderRadius: '999px',
-              fontWeight: '700',
-              cursor: 'pointer'
-          }}>
-          Open Cart
-        </button>
-      )}
-
       <Routes>
-        <Route path='/' element={<ProductsPage />} />
+        <Route path='/' element={<LoginPage />} />
         <Route path='/login' element={<LoginPage />} />
         <Route path='/register' element={<RegisterPage />} />
-        <Route path='/products' element={<ProductsPage />} />
-        <Route path='/products/:id' element={<ProductDetailPage />} />
-        /* protected routes below - off for test purposes, will add back in once auth is working and we can test with real users */
-        {/* <Route path='/cart' element={
+        <Route path='/products' element={
+          <ProtectedRoute>
+            <ProductsPage />
+          </ProtectedRoute>
+        } />
+        <Route path='/products/:id' element={
+          <ProtectedRoute>
+            <ProductDetailPage />
+          </ProtectedRoute>
+        } />
+        <Route path='/cart' element={
           <ProtectedRoute>
             <CartPage />
           </ProtectedRoute>
-        } /> */}
-
-        /* not protected for testing purposes — will add back in once auth is working and we can test with real users */
-        <Route path='/cart' element={<CartPage />} />
+        } />
         <Route path='/profile' element={
           <ProtectedRoute>
             <ProfilePage />
           </ProtectedRoute>
         } />
-        
-        {/*<Route path='/admin' element={
+        <Route path='/admin' element={
           <ProtectedRoute adminOnly={true}>
             <AdminPage />
           </ProtectedRoute>
-        } />*/}
-        <Route path='/admin' element={<AdminPage />} />
+        } />
         <Route path='*' element={<ErrorPage />} />
       </Routes>
     </BrowserRouter>
