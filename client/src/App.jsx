@@ -11,6 +11,7 @@ import ProductDetailPage from './pages/ProductDetailPage'
 import CartPage from './pages/CartPage'
 import ProfilePage from './pages/ProfilePage'
 import AdminPage from './pages/AdminPage'
+import ErrorPage from './pages/ErrorPage'
 
 function App() {
   const [cartOpen, setCartOpen] = useState(false)
@@ -71,6 +72,7 @@ function App() {
         } />*/}
         <Route path='/admin' element={<AdminPage />} />
       </Routes>
+      <Route path='*' element={<ErrorPage />} />
     </BrowserRouter>
   )
 }
