@@ -215,7 +215,7 @@ function ProfilePage() {
             <button onClick={handleSaveAccount} disabled={accountLoading} style={greenBtnStyle}>
               {accountLoading ? 'Saving...' : 'Save Changes'}
             </button>
-            <button onClick={handleDeleteAccount} style={dangerBtnStyle}>Delete Account</button>
+            <button onClick={() => { logout(); navigate('/login') }} style={dangerBtnStyle}>Log Out</button>
           </div>
         )}
 
@@ -301,10 +301,18 @@ const greenBtnStyle = {
 }
 
 const dangerBtnStyle = {
-  width: '100%', background: 'transparent', color: '#C0392B',
-  border: '1.5px solid #C0392B', padding: '12px', borderRadius: '999px',
-  fontSize: '14px', fontWeight: '700', textTransform: 'uppercase',
-  letterSpacing: '0.05em', cursor: 'pointer', fontFamily: 'inherit'
+  width: '100%',
+  background: 'transparent',
+  color: '#1A1A1A',
+  border: '1.5px solid #1A1A1A',
+  padding: '12px',
+  borderRadius: '999px',
+  fontSize: '14px',
+  fontWeight: '700',
+  textTransform: 'uppercase',
+  letterSpacing: '0.05em',
+  cursor: 'pointer',
+  fontFamily: 'inherit'
 }
 
 const errorStyle = {
