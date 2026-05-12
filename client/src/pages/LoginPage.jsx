@@ -1,25 +1,22 @@
 /*
-  LOGIN PAGE — Sahil
-  -------------------
-  Handles customer and admin login.
-  Same page for both — role determined by JWT returned from backend.
+  REGISTER PAGE — Sahil
+  ----------------------
+  Handles new user registration.
 
   DEPENDENCIES:
-  - useAuth from context/useAuth — stores JWT after login
+  - useAuth from context/useAuth — stores JWT after register
   - api.js — axios instance for API calls
-  - React Router — redirect after login
+  - React Router — redirect after register
   - coffee-bean.png — background asset in client/src/assets/
 
   ENDPOINTS USED:
-  - POST /api/auth/login — verify credentials, return JWT
+  - POST /api/auth/register — create account, return JWT
 
   FLOW:
-  - User submits email + password
+  - User submits name, email, password, confirm password
+  - Validates passwords match before submitting
   - On success: call login() from useAuth, redirect to /
   - On failure: show error message below form
-
-  NOTE:
-  - Google and Facebook buttons are UI only — no real OAuth needed for assessment
 */
 
 import { useState } from 'react'
@@ -48,9 +45,11 @@ const beans = [
   { top: '89%', left: '74%', size: 85,  rotate: -20 },
 ]
 
-function LoginPage() {
+function RegisterPage() {
+  const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [confirmPassword, setConfirmPassword] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
   const { login } = useAuth()
@@ -60,18 +59,31 @@ function LoginPage() {
     e.preventDefault()
     setError('')
 
-    if (!email || !password) {
+    // validate all fields
+    if (!name || !email || !password || !confirmPassword) {
       setError('Please fill in all fields')
+      return
+    }
+
+    // validate passwords match
+    if (password !== confirmPassword) {
+      setError('Passwords do not match')
+      return
+    }
+
+    // validate password length
+    if (password.length < 8) {
+      setError('Password must be at least 8 characters')
       return
     }
 
     try {
       setLoading(true)
-      const res = await api.post('/auth/login', { email, password })
+      const res = await api.post('/auth/register', { name, email, password })
       login(res.data.user, res.data.token)
       navigate('/')
     } catch (err) {
-      setError(err.response?.data?.message || 'Invalid email or password')
+      setError(err.response?.data?.message || 'Something went wrong. Please try again.')
     } finally {
       setLoading(false)
     }
@@ -111,7 +123,7 @@ function LoginPage() {
         />
       ))}
 
-      {/* login card */}
+      {/* register card */}
       <div style={{
         background: '#FFFFFF',
         borderRadius: '20px',
@@ -134,7 +146,7 @@ function LoginPage() {
           margin: '0 0 24px',
           fontFamily: 'Jomhuria, serif',
           lineHeight: 1
-        }}>Log In</p>
+        }}>Sign Up</p>
 
         {/* error message */}
         {error && (
@@ -150,6 +162,18 @@ function LoginPage() {
 
         <form onSubmit={handleSubmit}>
 
+          {/* full name */}
+          <div style={{ marginBottom: '16px' }}>
+            <label style={labelStyle}>Full Name</label>
+            <input
+              type="text"
+              placeholder="Your full name"
+              value={name}
+              onChange={e => setName(e.target.value)}
+              style={inputStyle}
+            />
+          </div>
+
           {/* email */}
           <div style={{ marginBottom: '16px' }}>
             <label style={labelStyle}>Email</label>
@@ -163,7 +187,7 @@ function LoginPage() {
           </div>
 
           {/* password */}
-          <div style={{ marginBottom: '8px' }}>
+          <div style={{ marginBottom: '16px' }}>
             <label style={labelStyle}>Password</label>
             <input
               type="password"
@@ -174,16 +198,19 @@ function LoginPage() {
             />
           </div>
 
-          {/* forgot password */}
-          <div style={{ textAlign: 'right', marginBottom: '20px' }}>
-            <span style={{
-              fontSize: '14px',
-              color: '#2980B9',
-              cursor: 'pointer'
-            }}>Forgot Password?</span>
+          {/* confirm password */}
+          <div style={{ marginBottom: '24px' }}>
+            <label style={labelStyle}>Confirm Password</label>
+            <input
+              type="password"
+              placeholder="re-enter your password"
+              value={confirmPassword}
+              onChange={e => setConfirmPassword(e.target.value)}
+              style={inputStyle}
+            />
           </div>
 
-          {/* sign in button */}
+          {/* create account button */}
           <button
             type="submit"
             disabled={loading}
@@ -203,7 +230,7 @@ function LoginPage() {
               marginBottom: '20px',
               fontFamily: 'inherit'
             }}>
-            {loading ? 'Signing in...' : 'Sign in'}
+            {loading ? 'Creating account...' : 'Create Account'}
           </button>
 
         </form>
@@ -244,7 +271,7 @@ function LoginPage() {
             <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
             <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
           </svg>
-          Sign in with Google
+          Sign up with Google
         </button>
 
         {/* facebook button */}
@@ -268,22 +295,22 @@ function LoginPage() {
           <svg width="18" height="18" viewBox="0 0 24 24" fill="#1877F2">
             <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
           </svg>
-          Sign in with Facebook
+          Sign up with Facebook
         </button>
 
-        {/* sign up link */}
+        {/* log in link */}
         <p style={{
           fontSize: '15px',
           color: '#1A1A1A',
           textAlign: 'center',
           margin: 0
         }}>
-          Don't have an account?{' '}
-          <Link to="/register" style={{
+          Already have an account?{' '}
+          <Link to="/login" style={{
             color: '#2980B9',
             fontWeight: '700',
             textDecoration: 'none'
-          }}>Sign up</Link>
+          }}>Log in</Link>
         </p>
 
       </div>
@@ -312,4 +339,4 @@ const inputStyle = {
   outline: 'none'
 }
 
-export default LoginPage
+export default RegisterPage
