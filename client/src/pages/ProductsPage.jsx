@@ -25,23 +25,8 @@ import api from '../api'
 import LoadingSpinner from '../components/LoadingSpinner'
 import NoResults from '../components/NoResults'
 
-// dummy products until API connected in Week 3
-const dummyProducts = [
-  { _id: '1', name: 'House Blend', roaster: 'Blend', price: 20.00, variant: '250g', image: 'https://images.unsplash.com/photo-1559056199-641a0ac8b55e?w=400' },
-  { _id: '2', name: 'Moonwalker Blend', roaster: 'Blend', price: 30.75, variant: '250g', image: 'https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?w=400' },
-  { _id: '3', name: 'Moka Premium Blend', roaster: 'Blend', price: 30.75, variant: '250g', image: 'https://images.unsplash.com/photo-1497935586351-b67a49e012bf?w=400' },
-  { _id: '4', name: 'Wild Child', roaster: 'Cohort', price: 19.50, variant: '250g', image: 'https://images.unsplash.com/photo-1511537190424-bbbab87ac5eb?w=400' },
-  { _id: '5', name: 'Head Honcho', roaster: 'Cohort', price: 19.50, variant: '250g', image: 'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=400' },
-  { _id: '6', name: 'Smooth Talker', roaster: 'Cohort', price: 19.50, variant: '500g', image: 'https://images.unsplash.com/photo-1509042239860-f550ce710b93?w=400' },
-  { _id: '7', name: 'Happy Chappy', roaster: 'Cohort', price: 19.50, variant: '500g', image: 'https://images.unsplash.com/photo-1442512595331-e89e73853f31?w=400' },
-  { _id: '8', name: 'Breezy Blend', roaster: 'Sacred Grounds', price: 17.00, variant: '500g', image: 'https://images.unsplash.com/photo-1461023058943-07fcbe16d735?w=400' },
-  { _id: '9', name: 'Seeker Blend', roaster: 'Sacred Grounds', price: 17.00, variant: '1kg', image: 'https://images.unsplash.com/photo-1498804103079-a6351b050096?w=400' },
-  { _id: '10', name: 'Groover Blend', roaster: 'Sacred Grounds', price: 17.00, variant: '1kg', image: 'https://images.unsplash.com/photo-1504630083234-14187a9df0f5?w=400' },
-  { _id: '11', name: 'Ola Brazil', roaster: 'Sacred Grounds', price: 17.00, variant: '1kg', image: 'https://images.unsplash.com/photo-1453614512568-c4024d13c247?w=400' },
-]
-
 function ProductsPage() {
-  const [products, setProducts] = useState(dummyProducts)
+  const [products, setProducts] = useState([])
   const [searchTerm, setSearchTerm] = useState('')
   const [activeCategory, setActiveCategory] = useState('View All')
   const [searchOpen, setSearchOpen] = useState(false)
@@ -55,21 +40,13 @@ function ProductsPage() {
   // debounced search
   useEffect(() => {
     const timer = setTimeout(async () => {
-      if (!searchTerm) {
-        setProducts(dummyProducts)
-        return
-      }
       setLoading(true)
       try {
-        // TODO Week 3: const res = await api.get(`/products?search=${searchTerm}`)
-        // setProducts(res.data)
-        const filtered = dummyProducts.filter(p =>
-          p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          p.roaster.toLowerCase().includes(searchTerm.toLowerCase())
-        )
-        setProducts(filtered)
+        const query = searchTerm ? `?search=${searchTerm}` : ''
+        const res = await api.get(`/products${query}`)
+        setProducts(res.data)
       } catch {
-        setError('Failed to load products')
+        setError('Failed to load products. Please try again.')
       } finally {
         setLoading(false)
       }
