@@ -19,44 +19,28 @@ import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import api from '../api'
 
-// dummy product until API connected in Week 3
-const dummyProduct = {
-  _id: '1',
-  name: 'Houseblend',
-  roaster: 'Minimal Roasters · Mecca',
-  origin: 'Brazil, Colombia',
-  price: 20.00,
-  variant: '1kg / Whole Beans',
-  stock: 50,
-  image: 'https://images.unsplash.com/photo-1559056199-641a0ac8b55e?w=600',
-  description: 'This is a coffee that is easy to love, full-bodied, rich and chocolaty, with a nutty sweetness. Black or with milk, it\'s deeply satisfying.',
-  tastingNotes: 'Chocolate, Caramel, Nuts',
-  coffeeProfile: 'Medium blend, Low acidity'
-}
-
 function ProductDetailPage() {
   const { id } = useParams()
   const navigate = useNavigate()
-  const [product, setProduct] = useState(dummyProduct)
+  const [product, setProduct] = useState(null)
   const [quantity, setQuantity] = useState(1)
   const [loading, setLoading] = useState(false)
   const [cartMessage, setCartMessage] = useState('')
 
-  // TODO Week 3: fetch real product
-  // useEffect(() => {
-  //   async function fetchProduct() {
-  //     try {
-  //       setLoading(true)
-  //       const res = await api.get(`/products/${id}`)
-  //       setProduct(res.data)
-  //     } catch (err) {
-  //       navigate('/404')
-  //     } finally {
-  //       setLoading(false)
-  //     }
-  //   }
-  //   fetchProduct()
-  // }, [id])
+  useEffect(() => {
+    async function fetchProduct() {
+      try {
+        setLoading(true)
+        const res = await api.get(`/products/${id}`)
+        setProduct(res.data)
+      } catch (err) {
+        navigate('/404')
+      } finally {
+        setLoading(false)
+      }
+    }
+    fetchProduct()
+  }, [id])
 
   const handleQuantityChange = (change) => {
     const newQty = quantity + change
@@ -75,7 +59,7 @@ function ProductDetailPage() {
     }
   }
 
-  if (loading) return (
+  if (loading || !product) return (
     <div style={{ textAlign: 'center', padding: '80px', fontSize: '18px' }}>
       Loading...
     </div>
