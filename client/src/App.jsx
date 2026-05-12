@@ -71,8 +71,8 @@ function App() {
           </ProtectedRoute>
         } />*/}
         <Route path='/admin' element={<AdminPage />} />
+        <Route path='*' element={<ErrorPage />} />
       </Routes>
-      <Route path='*' element={<ErrorPage />} />
     </BrowserRouter>
   )
 }
