@@ -2,25 +2,6 @@
   LOGIN PAGE — Sahil
   -------------------
   Handles customer and admin login.
-  Same page for both — role determined by JWT returned from backend.
-
-  DEPENDENCIES:
-  - useAuth from context/useAuth — stores JWT after login
-  - api.js — axios instance for API calls
-  - React Router — redirect after login
-  - coffee-bean.png — background asset in client/src/assets/
-
-  ENDPOINTS USED:
-  - POST /api/auth/login — verify credentials, return JWT
-
-  FLOW:
-  - User submits email + password
-  - On success: call login() from useAuth, redirect to /products
-  - On failure: show error message below form
-  - If already logged in: redirect to /products automatically
-
-  NOTE:
-  - Google and Facebook buttons are UI only — no real OAuth needed for assessment
 */
 
 import { useState } from 'react'
@@ -57,8 +38,11 @@ function LoginPage() {
   const { login, token } = useAuth()
   const navigate = useNavigate()
 
-  // if already logged in redirect to products
-  if (token) return <Navigate to='/products' />
+  // if already logged in redirect based on role
+  if (token) {
+    const storedUser = JSON.parse(localStorage.getItem('user'))
+    return <Navigate to={storedUser?.role === 'admin' ? '/admin' : '/products'} />
+  }
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -73,7 +57,7 @@ function LoginPage() {
       setLoading(true)
       const res = await api.post('/auth/login', { email, password })
       login(res.data.user, res.data.token)
-      navigate('/products')
+      navigate(res.data.user.role === 'admin' ? '/admin' : '/products')
     } catch (err) {
       setError(err.response?.data?.message || 'Invalid email or password')
     } finally {
@@ -93,7 +77,6 @@ function LoginPage() {
       overflow: 'hidden'
     }}>
 
-      {/* scattered coffee beans */}
       {beans.map((bean, i) => (
         <img
           key={i}
@@ -115,7 +98,6 @@ function LoginPage() {
         />
       ))}
 
-      {/* login card */}
       <div style={{
         background: '#FFFFFF',
         borderRadius: '20px',
@@ -128,7 +110,6 @@ function LoginPage() {
         boxShadow: '0 8px 40px rgba(0,0,0,0.06)'
       }}>
 
-        {/* heading */}
         <p style={{
           fontSize: '52px',
           fontWeight: '400',
@@ -140,7 +121,6 @@ function LoginPage() {
           lineHeight: 1
         }}>Log In</p>
 
-        {/* error message */}
         {error && (
           <p style={{
             fontSize: '14px',
@@ -154,7 +134,6 @@ function LoginPage() {
 
         <form onSubmit={handleSubmit}>
 
-          {/* email */}
           <div style={{ marginBottom: '16px' }}>
             <label style={labelStyle}>Email</label>
             <input
@@ -166,7 +145,6 @@ function LoginPage() {
             />
           </div>
 
-          {/* password */}
           <div style={{ marginBottom: '8px' }}>
             <label style={labelStyle}>Password</label>
             <input
@@ -178,16 +156,12 @@ function LoginPage() {
             />
           </div>
 
-          {/* forgot password */}
           <div style={{ textAlign: 'right', marginBottom: '20px' }}>
-            <span style={{
-              fontSize: '14px',
-              color: '#2980B9',
-              cursor: 'pointer'
-            }}>Forgot Password?</span>
+            <span style={{ fontSize: '14px', color: '#2980B9', cursor: 'pointer' }}>
+              Forgot Password?
+            </span>
           </div>
 
-          {/* sign in button */}
           <button
             type="submit"
             disabled={loading}
@@ -212,35 +186,18 @@ function LoginPage() {
 
         </form>
 
-        {/* or divider */}
-        <div style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: '12px',
-          marginBottom: '14px'
-        }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '14px' }}>
           <div style={{ flex: 1, height: '1px', background: '#E8E8E4' }} />
           <span style={{ fontSize: '14px', color: '#6B6B6B' }}>Or</span>
           <div style={{ flex: 1, height: '1px', background: '#E8E8E4' }} />
         </div>
 
-        {/* google button */}
         <button style={{
-          width: '100%',
-          background: '#F5F5F3',
-          color: '#1A1A1A',
-          border: 'none',
-          padding: '13px',
-          borderRadius: '8px',
-          fontSize: '15px',
-          fontWeight: '500',
-          cursor: 'pointer',
-          marginBottom: '10px',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          gap: '10px',
-          fontFamily: 'inherit'
+          width: '100%', background: '#F5F5F3', color: '#1A1A1A',
+          border: 'none', padding: '13px', borderRadius: '8px',
+          fontSize: '15px', fontWeight: '500', cursor: 'pointer',
+          marginBottom: '10px', display: 'flex', alignItems: 'center',
+          justifyContent: 'center', gap: '10px', fontFamily: 'inherit'
         }}>
           <svg width="18" height="18" viewBox="0 0 24 24">
             <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
@@ -251,23 +208,12 @@ function LoginPage() {
           Sign in with Google
         </button>
 
-        {/* facebook button */}
         <button style={{
-          width: '100%',
-          background: '#F5F5F3',
-          color: '#1A1A1A',
-          border: 'none',
-          padding: '13px',
-          borderRadius: '8px',
-          fontSize: '15px',
-          fontWeight: '500',
-          cursor: 'pointer',
-          marginBottom: '20px',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          gap: '10px',
-          fontFamily: 'inherit'
+          width: '100%', background: '#F5F5F3', color: '#1A1A1A',
+          border: 'none', padding: '13px', borderRadius: '8px',
+          fontSize: '15px', fontWeight: '500', cursor: 'pointer',
+          marginBottom: '20px', display: 'flex', alignItems: 'center',
+          justifyContent: 'center', gap: '10px', fontFamily: 'inherit'
         }}>
           <svg width="18" height="18" viewBox="0 0 24 24" fill="#1877F2">
             <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
@@ -275,19 +221,11 @@ function LoginPage() {
           Sign in with Facebook
         </button>
 
-        {/* sign up link */}
-        <p style={{
-          fontSize: '15px',
-          color: '#1A1A1A',
-          textAlign: 'center',
-          margin: 0
-        }}>
+        <p style={{ fontSize: '15px', color: '#1A1A1A', textAlign: 'center', margin: 0 }}>
           Don't have an account?{' '}
-          <Link to="/register" style={{
-            color: '#2980B9',
-            fontWeight: '700',
-            textDecoration: 'none'
-          }}>Sign up</Link>
+          <Link to="/register" style={{ color: '#2980B9', fontWeight: '700', textDecoration: 'none' }}>
+            Sign up
+          </Link>
         </p>
 
       </div>
@@ -296,24 +234,14 @@ function LoginPage() {
 }
 
 const labelStyle = {
-  display: 'block',
-  fontSize: '15px',
-  fontWeight: '600',
-  color: '#1A1A1A',
-  marginBottom: '6px'
+  display: 'block', fontSize: '15px', fontWeight: '600',
+  color: '#1A1A1A', marginBottom: '6px'
 }
 
 const inputStyle = {
-  width: '100%',
-  background: '#FFFFFF',
-  border: '1px solid #D0D0D0',
-  borderRadius: '8px',
-  padding: '12px 14px',
-  fontSize: '15px',
-  color: '#1A1A1A',
-  fontFamily: 'inherit',
-  boxSizing: 'border-box',
-  outline: 'none'
+  width: '100%', background: '#FFFFFF', border: '1px solid #D0D0D0',
+  borderRadius: '8px', padding: '12px 14px', fontSize: '15px',
+  color: '#1A1A1A', fontFamily: 'inherit', boxSizing: 'border-box', outline: 'none'
 }
 
 export default LoginPage

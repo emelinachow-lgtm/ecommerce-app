@@ -39,8 +39,8 @@ function AdminPage() {
   const [addEditOpen, setAddEditOpen] = useState(false)
   const [deleteOpen, setDeleteOpen] = useState(false)
   const [selectedProduct, setSelectedProduct] = useState(null)
-  const { user } = useAuth()
   const navigate = useNavigate()
+  const { user, logout } = useAuth()
 
   // fetch all data on mount
   useEffect(() => {
@@ -186,13 +186,44 @@ function AdminPage() {
           </div>
         ))}
 
-        <div style={{ marginTop: 'auto', padding: '16px 20px', borderTop: '0.5px solid rgba(0,0,0,0.1)' }}>
-          <p style={{ fontSize: '15px', fontWeight: '700', color: '#1A1A1A', margin: '0 0 2px', textAlign: 'left' }}>
+        <div style={{
+          marginTop: 'auto',
+          padding: '16px 20px',
+          borderTop: '0.5px solid rgba(0,0,0,0.1)'
+        }}>
+          <p style={{
+            fontSize: '15px', fontWeight: '700', color: '#1A1A1A',
+            margin: '0 0 2px', textAlign: 'left'
+          }}>
             {user?.name || 'Admin User'}
           </p>
-          <p style={{ fontSize: '14px', color: 'rgba(0,0,0,0.5)', margin: 0, textAlign: 'left' }}>
+          <p style={{
+            fontSize: '14px', color: 'rgba(0,0,0,0.5)',
+            margin: '0 0 12px', textAlign: 'left'
+          }}>
             {user?.email || 'admin@espresso.com'}
           </p>
+          <button
+            onClick={() => navigate('/products')}
+            style={{
+              width: '100%', background: 'transparent', color: '#1A1A1A',
+              border: '1.5px solid #1A1A1A', padding: '8px', borderRadius: '999px',
+              fontSize: '12px', fontWeight: '700', textTransform: 'uppercase',
+              letterSpacing: '0.04em', cursor: 'pointer', marginBottom: '8px',
+              fontFamily: 'inherit'
+            }}>
+            ← Back to Shop
+          </button>
+          <button
+            onClick={() => { logout(); navigate('/login') }}
+            style={{
+              width: '100%', background: 'transparent', color: '#C0392B',
+              border: '1.5px solid #C0392B', padding: '8px', borderRadius: '999px',
+              fontSize: '12px', fontWeight: '700', textTransform: 'uppercase',
+              letterSpacing: '0.04em', cursor: 'pointer', fontFamily: 'inherit'
+            }}>
+            Log Out
+          </button>
         </div>
       </div>
 
