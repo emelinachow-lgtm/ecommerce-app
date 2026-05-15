@@ -4,80 +4,110 @@
   Displays the logged in user's full cart.
 
   DEPENDENCIES:
-  - Requires authMiddleware from Sahil to be working before API calls work
-  - Requires Cart routes from server/routes/cartRoutes.js
-  - Requires LoadingSpinner from Khushi (client/src/components/LoadingSpinner.jsx)
-  - Requires ErrorPage from Sahil (client/src/components/ErrorPage.jsx)
+  - authMiddleware from Sahil — JWT verified automatically via api.js
+  - Cart routes from server/routes/cartRoutes.js
   - api.js handles JWT token automatically on every request
 
   ENDPOINTS USED:
   - GET    /api/cart              — fetch cart on page load
   - PUT    /api/cart/:itemId      — update item quantity
   - DELETE /api/cart/:itemId      — remove item from cart
-
-  TO DO:
-  - Replace dummy data with real API calls in Week 3
-  - Connect to CartSidebar so both stay in sync when cart updates
 */
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-
-const dummyCart = {
-  items: [
-    {
-      _id: '1',
-      product: {
-        name: 'Wild Child',
-        roaster: 'Cohort',
-        variant: '1kg / Whole Beans',
-        price: 29.00,
-        image: 'https://images.unsplash.com/photo-1559056199-641a0ac8b55e?w=120'
-      },
-      quantity: 2
-    },
-    {
-      _id: '2',
-      product: {
-        name: 'Houseblend',
-        roaster: 'Mecca',
-        variant: '500g / Whole Beans',
-        price: 40.00,
-        image: 'https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?w=120'
-      },
-      quantity: 1
-    }
-  ]
-}
+import api from '../api'
 
 function CartPage() {
-  const [cart, setCart] = useState(dummyCart)
+  const [cart, setCart] = useState({ items: [] })
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
   const [notesOpen, setNotesOpen] = useState(false)
   const [notes, setNotes] = useState('')
   const navigate = useNavigate()
+
+  // fetch cart on page load
+  useEffect(() => {
+    async function fetchCart() {
+      try {
+        setLoading(true)
+        const res = await api.get('/cart')
+        setCart(res.data)
+      } catch (err) {
+        setError('Failed to load cart. Please try again.')
+      } finally {
+        setLoading(false)
+      }
+    }
+    fetchCart()
+  }, [])
 
   const total = cart.items.reduce(
     (sum, item) => sum + item.product.price * item.quantity, 0
   )
 
-  const handleQuantityChange = (itemId, newQty) => {
+  const handleQuantityChange = async (itemId, newQty) => {
     if (newQty < 1) return
-    setCart(prev => ({
-      ...prev,
-      items: prev.items.map(item =>
-        item._id === itemId ? { ...item, quantity: newQty } : item
-      )
-    }))
-    // TODO Week 3: await api.put(`/cart/${itemId}`, { quantity: newQty })
+    try {
+      await api.put(`/cart/${itemId}`, { quantity: newQty })
+      setCart(prev => ({
+        ...prev,
+        items: prev.items.map(item =>
+          item._id === itemId ? { ...item, quantity: newQty } : item
+        )
+      }))
+    } catch (err) {
+      setError('Failed to update quantity.')
+    }
   }
 
-  const handleRemove = (itemId) => {
-    setCart(prev => ({
-      ...prev,
-      items: prev.items.filter(item => item._id !== itemId)
-    }))
-    // TODO Week 3: await api.delete(`/cart/${itemId}`)
+  const handleRemove = async (itemId) => {
+    try {
+      await api.delete(`/cart/${itemId}`)
+      setCart(prev => ({
+        ...prev,
+        items: prev.items.filter(item => item._id !== itemId)
+      }))
+    } catch (err) {
+      setError('Failed to remove item.')
+    }
   }
+
+  if (loading) return (
+    <div style={{
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      minHeight: '60vh',
+      fontSize: '18px',
+      color: '#6B6B6B'
+    }}>Loading cart...</div>
+  )
+
+  if (error) return (
+    <div style={{
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      justifyContent: 'center',
+      minHeight: '60vh',
+      gap: '16px'
+    }}>
+      <p style={{ fontSize: '18px', color: '#C0392B' }}>{error}</p>
+      <button
+        onClick={() => window.location.reload()}
+        style={{
+          background: '#C5EBDA',
+          border: 'none',
+          padding: '12px 24px',
+          borderRadius: '999px',
+          fontSize: '15px',
+          fontWeight: '700',
+          textTransform: 'uppercase',
+          cursor: 'pointer'
+        }}>Try Again</button>
+    </div>
+  )
 
   // empty state
   if (cart.items.length === 0) {
@@ -133,7 +163,6 @@ function CartPage() {
       minHeight: '100vh'
     }}>
 
-      {/* page heading */}
       <h1 style={{
         fontSize: '50px',
         fontWeight: '400',
@@ -290,7 +319,6 @@ function CartPage() {
         justifyContent: 'space-between',
         alignItems: 'flex-start'
       }}>
-        {/* continue shopping */}
         <button
           onClick={() => navigate('/products')}
           style={{
@@ -308,7 +336,6 @@ function CartPage() {
           Continue Shopping
         </button>
 
-        {/* totals + checkout */}
         <div style={{ textAlign: 'right', minWidth: '300px' }}>
 
           {/* add notes */}
@@ -321,15 +348,8 @@ function CartPage() {
               cursor: 'pointer',
               marginBottom: '12px'
             }}>
-            <span style={{
-              fontSize: '18px',
-              color: '#1A1A1A'
-            }}>Add Notes</span>
-            <span style={{
-              fontSize: '24px',
-              color: '#1A1A1A',
-              fontWeight: '300'
-            }}>{notesOpen ? '−' : '+'}</span>
+            <span style={{ fontSize: '18px', color: '#1A1A1A' }}>Add Notes</span>
+            <span style={{ fontSize: '24px', color: '#1A1A1A', fontWeight: '300' }}>{notesOpen ? '−' : '+'}</span>
           </div>
           {notesOpen && (
             <textarea
@@ -360,18 +380,14 @@ function CartPage() {
             alignItems: 'center',
             marginBottom: '16px'
           }}>
-            <span style={{
-              fontSize: '18px',
-              color: '#1A1A1A'
-            }}>{cart.items.length} item{cart.items.length !== 1 ? 's' : ''}</span>
-            <span style={{
-              fontSize: '22px',
-              fontWeight: '900',
-              color: '#1A1A1A'
-            }}>${total.toFixed(2)} AUD</span>
+            <span style={{ fontSize: '18px', color: '#1A1A1A' }}>
+              {cart.items.length} item{cart.items.length !== 1 ? 's' : ''}
+            </span>
+            <span style={{ fontSize: '22px', fontWeight: '900', color: '#1A1A1A' }}>
+              ${total.toFixed(2)} AUD
+            </span>
           </div>
 
-          {/* checkout button */}
           <button style={{
             background: '#C5EBDA',
             color: '#1A1A1A',
