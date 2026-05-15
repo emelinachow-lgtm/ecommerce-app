@@ -172,14 +172,20 @@ function AdminPage() {
         ].map(item => (
           <div
             key={item.id}
-            onClick={() => setActiveNav(item.id)}
+            onClick={() => item.id === 'dashboard' && setActiveNav(item.id)}
             style={{
-              display: 'flex', alignItems: 'center', gap: '10px',
-              padding: '12px 20px', cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '10px',
+              padding: '12px 20px',
+              cursor: item.id === 'dashboard' ? 'pointer' : 'not-allowed',
               background: activeNav === item.id ? 'rgba(0,0,0,0.1)' : 'transparent',
               fontWeight: activeNav === item.id ? '700' : '500',
-              fontSize: '15px', color: '#1A1A1A',
-              textTransform: 'uppercase', letterSpacing: '0.04em'
+              fontSize: '15px',
+              color: '#1A1A1A',
+              textTransform: 'uppercase',
+              letterSpacing: '0.04em',
+              opacity: item.id === 'dashboard' ? 1 : 0.4
             }}>
             {item.icon}
             <span>{item.label}</span>
