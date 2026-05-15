@@ -43,26 +43,29 @@ router.get('/', authMiddleware, async (req, res) => {
 // POST /api/cart — add item to cart
 router.post('/', authMiddleware, async (req, res) => {
   try {
+    console.log('POST /cart hit')
+    console.log('req.body:', req.body)
+    console.log('req.user:', req.user)
+
     const { productId, quantity } = req.body
     let cart = await Cart.findOne({ user: req.user.id })
 
-    // create new cart if user doesn't have one yet
     if (!cart) cart = new Cart({ user: req.user.id, items: [] })
 
-    // if product already in cart increase quantity
     const existingItem = cart.items.find(
       item => item.product.toString() === productId
     )
     if (existingItem) {
       existingItem.quantity += quantity
     } else {
-      // otherwise add as new item
       cart.items.push({ product: productId, quantity })
     }
 
     await cart.save()
+    await cart.populate('items.product')
     res.json(cart)
   } catch (err) {
+    console.error('Cart POST error:', err)
     res.status(500).json({ message: 'Server error' })
   }
 })

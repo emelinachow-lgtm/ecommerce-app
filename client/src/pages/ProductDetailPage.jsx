@@ -50,7 +50,7 @@ function ProductDetailPage() {
 
   const handleAddToCart = async () => {
     try {
-      // TODO Week 3: await api.post('/cart', { productId: product._id, quantity })
+      await api.post('/cart', { productId: product._id, quantity })
       setCartMessage('Added to cart!')
       setTimeout(() => setCartMessage(''), 2000)
     } catch {
