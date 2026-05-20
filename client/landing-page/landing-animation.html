@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Espresso Yourself — Landing</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html, body {
+      width: 100%;
+      overflow-x: hidden;
+      background: #f5f5dc;
+    }
+
+    /* ── WRAPPER ── */
+    #landing {
+      position: relative;
+      width: 100%;
+    }
+
+    /* ── SECTIONS ── */
+    .section {
+      position: relative;
+      width: 100%;
+      height: 100vh;
+      overflow: hidden;
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+    }
+
+    #s1 { background-image: url('MacBook_Pro_16__-_18.svg'); }
+    #s2 { background-image: url('screen2.svg'); }
+    #s3 { background-image: url('screen3.svg'); }
+    #s4 { background-image: url('screen4.svg'); }
+
+    /* ── FARM HILLS OVERLAY (s1 bottom) ── */
+    #farm-hills {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 60%;
+      background-image: url('MacBook_Pro_16__-_17.svg');
+      background-size: cover;
+      background-position: top center;
+      transform: translateY(100%);
+      opacity: 0;
+      transition: none;
+      pointer-events: none;
+    }
+
+    /* ── RED CHERRY BUNCHES ── */
+    .cherry {
+      position: absolute;
+      pointer-events: none;
+      will-change: transform, opacity;
+    }
+
+    #cherry-left {
+      width: 280px;
+      top: 0;
+      left: -40px;
+      transform-origin: top left;
+    }
+
+    #cherry-right {
+      width: 280px;
+      top: 0;
+      right: -40px;
+      transform-origin: top right;
+    }
+
+    /* ── TEA GARDEN STRIP ── */
+    #tea-garden {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      pointer-events: none;
+    }
+
+    #tea-garden img {
+      width: 100%;
+      display: block;
+    }
+
+    /* ── FLOATING PNG ELEMENTS (s2) ── */
+    .floater {
+      position: absolute;
+      pointer-events: none;
+      will-change: transform;
+      mix-blend-mode: multiply;
+    }
+
+    /* ── SCREEN 2 FLOATERS ── */
+    #f1  { width: 200px; top:  8%; left:  5%; }
+    #f2  { width: 180px; top: 12%; right: 8%; }
+    #f3  { width: 160px; top: 35%; left: 12%; }
+    #f4  { width: 190px; top: 30%; right: 5%; }
+    #f5  { width: 170px; top: 55%; left:  3%; }
+    #f6  { width: 200px; top: 60%; right: 3%; }
+    #f7  { width: 150px; top: 20%; left: 40%; }
+    #f8  { width: 160px; top: 45%; left: 45%; }
+    #f9  { width: 140px; top: 70%; left: 30%; }
+    #f10 { width: 150px; top: 72%; right:25%; }
+
+    /* ── LOWER ELEMENTS (s3 sides) ── */
+    #lower-left {
+      position: absolute;
+      left: -40px;
+      bottom: 0;
+      width: 360px;
+      pointer-events: none;
+    }
+
+    #lower-right {
+      position: absolute;
+      right: -40px;
+      bottom: 0;
+      width: 360px;
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body>
+
+<div id="landing">
+
+  <!-- SECTION 1: Clean yellow + SMELL COFFEE, farm rises in -->
+  <div class="section" id="s1">
+
+    <!-- Farm hills rise from bottom as you scroll -->
+    <div id="farm-hills"></div>
+
+    <!-- Tea garden strip at very bottom -->
+    <div id="tea-garden">
+      <img src="Group_11.svg" alt="" />
+    </div>
+
+    <!-- Red cherry bunches animate in and fall to s2 -->
+    <img class="cherry" id="cherry-left"  src="UPPER_EL.svg"   alt="" />
+    <img class="cherry" id="cherry-right" src="UPPER_EL-1.svg" alt="" />
+
+  </div>
+
+  <!-- SECTION 2: Cherry bunches + floaters funnel into cone -->
+  <div class="section" id="s2">
+    <img class="floater" id="f1"  src="1.png"  alt="" />
+    <img class="floater" id="f2"  src="2.png"  alt="" />
+    <img class="floater" id="f3"  src="3.png"  alt="" />
+    <img class="floater" id="f4"  src="4.png"  alt="" />
+    <img class="floater" id="f5"  src="5.png"  alt="" />
+    <img class="floater" id="f6"  src="6.png"  alt="" />
+    <img class="floater" id="f7"  src="7.png"  alt="" />
+    <img class="floater" id="f8"  src="8.png"  alt="" />
+    <img class="floater" id="f9"  src="9.png"  alt="" />
+    <img class="floater" id="f10" src="10.png" alt="" />
+  </div>
+
+  <!-- SECTION 3: Coffee filter cone, beans falling in -->
+  <div class="section" id="s3">
+    <img id="lower-left"  src="LOWER_EL.svg"   alt="" />
+    <img id="lower-right" src="LOWER_EL-1.svg" alt="" />
+  </div>
+
+  <!-- SECTION 4 -->
+  <div class="section" id="s4"></div>
+
+</div>
+
+<script>
+  const vh = window.innerHeight;
+
+  // Elements
+  const farmHills   = document.getElementById('farm-hills');
+  const teaGarden   = document.getElementById('tea-garden');
+  const cherryLeft  = document.getElementById('cherry-left');
+  const cherryRight = document.getElementById('cherry-right');
+
+  const floaters = [
+    { el: document.getElementById('f1'),  factor: 0.10, origX:   5, origY:  8  },
+    { el: document.getElementById('f2'),  factor: 0.14, origX:  85, origY: 12  },
+    { el: document.getElementById('f3'),  factor: 0.08, origX:  12, origY: 35  },
+    { el: document.getElementById('f4'),  factor: 0.18, origX:  90, origY: 30  },
+    { el: document.getElementById('f5'),  factor: 0.12, origX:   3, origY: 55  },
+    { el: document.getElementById('f6'),  factor: 0.16, origX:  92, origY: 60  },
+    { el: document.getElementById('f7'),  factor: 0.20, origX:  40, origY: 20  },
+    { el: document.getElementById('f8'),  factor: 0.09, origX:  45, origY: 45  },
+    { el: document.getElementById('f9'),  factor: 0.22, origX:  30, origY: 70  },
+    { el: document.getElementById('f10'), factor: 0.13, origX:  60, origY: 72  },
+  ];
+
+  function easeInOut(t) {
+    return t < 0.5 ? 2*t*t : -1+(4-2*t)*t;
+  }
+
+  function clamp(val, min, max) {
+    return Math.max(min, Math.min(max, val));
+  }
+
+  function onScroll() {
+    const scrollY = window.scrollY;
+
+    // ── SECTION 1 ANIMATIONS ──
+    // progress 0→1 as user scrolls through section 1
+    const s1Progress = clamp(scrollY / vh, 0, 1);
+    const s1Eased = easeInOut(s1Progress);
+
+    // Farm hills rise from bottom (starts halfway through s1 scroll)
+    const hillProgress = clamp((s1Progress - 0.3) / 0.7, 0, 1);
+    const hillEased = easeInOut(hillProgress);
+    farmHills.style.transform = `translateY(${(1 - hillEased) * 100}%)`;
+    farmHills.style.opacity   = hillEased;
+
+    // Tea garden fades out as you leave s1
+    const teaOpacity = clamp(1 - (s1Progress * 2.5), 0, 1);
+    teaGarden.style.opacity = teaOpacity;
+
+    // Cherry bunches: slide in from corners once farm appears, then fall to s2
+    const cherryAppear = clamp((s1Progress - 0.5) / 0.5, 0, 1);
+    const cherryFall   = clamp((scrollY - vh * 0.7) / (vh * 0.5), 0, 1);
+    const cherryFallEased = easeInOut(cherryFall);
+
+    const leftRotate  =  25 - (cherryFallEased * 25);  // 25° → 0°
+    const rightRotate = -25 + (cherryFallEased * 25);  // -25° → 0°
+    const translateYCherry = cherryFallEased * vh * 0.9;
+    const translateXLeft   = cherryFallEased * 60;
+    const translateXRight  = cherryFallEased * -60;
+
+    cherryLeft.style.opacity   = cherryAppear;
+    cherryRight.style.opacity  = cherryAppear;
+    cherryLeft.style.transform  = `translateY(${translateYCherry}px) translateX(${translateXLeft}px) rotate(${leftRotate}deg)`;
+    cherryRight.style.transform = `translateY(${translateYCherry}px) translateX(${translateXRight}px) rotate(${rightRotate}deg)`;
+
+    // ── SECTION 2 FLOATERS FUNNEL INTO CONE ──
+    // s2Progress: 0→1 as scrollY goes from vh to 2*vh
+    const s2Progress = clamp((scrollY - vh) / vh, 0, 1);
+    const s2Eased = easeInOut(s2Progress);
+
+    floaters.forEach(({ el, factor, origX, origY }) => {
+      // center of page = 50% X, 100% Y (bottom center = cone opening)
+      const targetX = 50;
+      const targetY = 110;
+
+      const currentX = origX + (targetX - origX) * s2Eased;
+      const currentY = origY + (targetY - origY) * s2Eased;
+
+      // scale down as they funnel in
+      const scale = 1 - (s2Eased * 0.6);
+
+      // rotate as they swirl
+      const rotate = s2Eased * (origX < 50 ? -180 : 180);
+
+      // opacity fades out at end
+      const opacity = 1 - (s2Eased * s2Eased);
+
+      el.style.left      = `${currentX}%`;
+      el.style.top       = `${currentY - origY}%`;
+      el.style.transform = `translate(-50%, 0) translateY(${s2Eased * vh * factor * 3}px) rotate(${rotate}deg) scale(${scale})`;
+      el.style.opacity   = opacity;
+    });
+
+    // ── SECTION 3 LOWER ELEMENTS PARALLAX ──
+    const lowerLeft  = document.getElementById('lower-left');
+    const lowerRight = document.getElementById('lower-right');
+    const s3Offset = scrollY - vh * 2;
+    if (s3Offset > 0) {
+      lowerLeft.style.transform  = `translateY(${s3Offset * 0.15}px)`;
+      lowerRight.style.transform = `translateY(${s3Offset * 0.15}px)`;
+    }
+  }
+
+  // Use requestAnimationFrame for 60fps
+  let ticking = false;
+  window.addEventListener('scroll', () => {
+    if (!ticking) {
+      requestAnimationFrame(() => {
+        onScroll();
+        ticking = false;
+      });
+      ticking = true;
+    }
+  });
+
+  // Run once on load
+  onScroll();
+</script>
+
+</body>
+</html>

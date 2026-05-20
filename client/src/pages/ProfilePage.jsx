@@ -3,70 +3,37 @@
   ----------------------
   Customer profile page with three tabs:
   - Account Details — view and edit name, email, delivery address
-  - Order History — view past orders
+  - Order History — view past orders (from cart data)
   - Password — change password
 
   DEPENDENCIES:
   - useAuth from context/useAuth — gets logged in user
   - api.js — axios instance for API calls
-  - React Router — redirect after delete account
+  - React Router — redirect after logout
 
   ENDPOINTS USED:
   - GET    /api/users/:id        — fetch user details on mount
-  - PUT    /api/users/:id        — update name, email, address
-  - DELETE /api/users/:id        — delete account
-  - GET    /api/cart             — fetch order history (uses cart data)
-
-  TO DO:
-  - Replace dummy data with real API calls in Week 3
-  - Connect order history to real cart/order data
+  - PUT    /api/users/:id        — update name, email
+  - GET    /api/cart             — fetch order history
 */
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/useAuth'
 import api from '../api'
-
-const dummyOrders = [
-  {
-    _id: 'EY-1042',
-    date: '4 May 2026',
-    items: [
-      { name: 'Wild Child — 1kg Whole Bean', quantity: 2, price: 58.00 },
-      { name: 'House Blend — 500g Ground', quantity: 1, price: 22.00 }
-    ],
-    total: 80.00
-  },
-  {
-    _id: 'EY-0987',
-    date: '18 Apr 2026',
-    items: [
-      { name: 'Head Honcho — 250g Ground', quantity: 1, price: 19.50 }
-    ],
-    total: 19.50
-  },
-  {
-    _id: 'EY-0856',
-    date: '2 Mar 2026',
-    items: [
-      { name: 'Smooth Talker — 1kg Whole Bean', quantity: 1, price: 32.00 },
-      { name: 'Happy Chappy — 500g Ground', quantity: 2, price: 44.00 }
-    ],
-    total: 76.00
-  }
-]
 
 function ProfilePage() {
   const { user, logout } = useAuth()
   const navigate = useNavigate()
   const [activeTab, setActiveTab] = useState('account')
-  const [firstName, setFirstName] = useState('Jamie')
-  const [lastName, setLastName] = useState('Lee')
-  const [email, setEmail] = useState('jamie@gmail.com')
-  const [address, setAddress] = useState('123 Collins St, Melbourne VIC 3000')
+
+  const [firstName, setFirstName] = useState('')
+  const [lastName, setLastName] = useState('')
+  const [email, setEmail] = useState('')
   const [accountError, setAccountError] = useState('')
   const [accountSuccess, setAccountSuccess] = useState('')
   const [accountLoading, setAccountLoading] = useState(false)
+
   const [currentPassword, setCurrentPassword] = useState('')
   const [newPassword, setNewPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
@@ -74,7 +41,44 @@ function ProfilePage() {
   const [passwordSuccess, setPasswordSuccess] = useState('')
   const [passwordLoading, setPasswordLoading] = useState(false)
 
+  const [orders, setOrders] = useState([])
+  const [ordersLoading, setOrdersLoading] = useState(false)
+
   const initials = `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase()
+
+  // fetch user details on mount
+  useEffect(() => {
+    async function fetchUser() {
+      if (!user?.id) return
+      try {
+        const res = await api.get(`/users/${user.id}`)
+        const nameParts = res.data.name.split(' ')
+        setFirstName(nameParts[0] || '')
+        setLastName(nameParts.slice(1).join(' ') || '')
+        setEmail(res.data.email)
+      } catch (err) {
+        console.error('Failed to fetch user:', err)
+      }
+    }
+    fetchUser()
+  }, [user])
+
+  // fetch order history when orders tab clicked
+  useEffect(() => {
+    if (activeTab !== 'orders') return
+    async function fetchOrders() {
+      try {
+        setOrdersLoading(true)
+        const res = await api.get('/cart')
+        setOrders(res.data.items || [])
+      } catch (err) {
+        console.error('Failed to fetch orders:', err)
+      } finally {
+        setOrdersLoading(false)
+      }
+    }
+    fetchOrders()
+  }, [activeTab])
 
   const handleSaveAccount = async () => {
     setAccountError('')
@@ -85,7 +89,10 @@ function ProfilePage() {
     }
     try {
       setAccountLoading(true)
-      // TODO Week 3: await api.put(`/users/${user.id}`, { name: `${firstName} ${lastName}`, email })
+      await api.put(`/users/${user.id}`, {
+        name: `${firstName} ${lastName}`.trim(),
+        email
+      })
       setAccountSuccess('Account details updated successfully')
     } catch (err) {
       setAccountError(err.response?.data?.message || 'Failed to update account')
@@ -111,7 +118,7 @@ function ProfilePage() {
     }
     try {
       setPasswordLoading(true)
-      // TODO Week 3: await api.put(`/users/${user.id}`, { password: newPassword })
+      await api.put(`/users/${user.id}`, { password: newPassword })
       setPasswordSuccess('Password updated successfully')
       setCurrentPassword('')
       setNewPassword('')
@@ -120,17 +127,6 @@ function ProfilePage() {
       setPasswordError(err.response?.data?.message || 'Failed to update password')
     } finally {
       setPasswordLoading(false)
-    }
-  }
-
-  const handleDeleteAccount = async () => {
-    if (!window.confirm('Are you sure you want to delete your account? This cannot be undone.')) return
-    try {
-      // TODO Week 3: await api.delete(`/users/${user.id}`)
-      logout()
-      navigate('/login')
-    } catch (err) {
-      setAccountError('Failed to delete account')
     }
   }
 
@@ -198,10 +194,6 @@ function ProfilePage() {
                 <label style={labelStyle}>Email address</label>
                 <input type="email" value={email} onChange={e => setEmail(e.target.value)} style={inputStyle} />
               </div>
-              <div style={{ gridColumn: '1 / -1' }}>
-                <label style={labelStyle}>Delivery address</label>
-                <input type="text" value={address} onChange={e => setAddress(e.target.value)} style={inputStyle} />
-              </div>
             </div>
             {user?.role === 'admin' && (
               <button onClick={() => navigate('/admin')} style={{
@@ -215,33 +207,48 @@ function ProfilePage() {
             <button onClick={handleSaveAccount} disabled={accountLoading} style={greenBtnStyle}>
               {accountLoading ? 'Saving...' : 'Save Changes'}
             </button>
-            <button onClick={() => { logout(); navigate('/login') }} style={dangerBtnStyle}>Log Out</button>
+            <button onClick={() => { logout(); navigate('/login') }} style={dangerBtnStyle}>
+              Log Out
+            </button>
           </div>
         )}
 
         {/* orders tab */}
         {activeTab === 'orders' && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-            {dummyOrders.map(order => (
-              <div key={order._id} style={{ background: '#F5F5CC', borderRadius: '14px', padding: '18px 20px' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
-                  <span style={{ fontSize: '13px', fontWeight: '700', color: '#1A1A1A', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Order #{order._id}</span>
-                  <span style={{ fontSize: '13px', color: '#6B6B6B' }}>{order.date}</span>
-                </div>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', marginBottom: '14px' }}>
-                  {order.items.map((item, i) => (
-                    <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                      <span style={{ fontSize: '14px', color: '#1A1A1A' }}>{item.name} × {item.quantity}</span>
-                      <span style={{ fontSize: '14px', fontWeight: '700', color: '#1A1A1A' }}>${item.price.toFixed(2)}</span>
-                    </div>
-                  ))}
-                </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '0.5px solid #E8E8E4', paddingTop: '12px' }}>
-                  <span style={{ fontSize: '16px', fontWeight: '900', color: '#1A1A1A' }}>Total ${order.total.toFixed(2)} AUD</span>
-                  <span style={{ fontSize: '11px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.04em', padding: '4px 12px', borderRadius: '999px', background: 'transparent', color: '#1A4D3A', border: '1.5px solid #C5EBDA' }}>Completed</span>
-                </div>
+            {ordersLoading ? (
+              <p style={{ textAlign: 'center', color: '#6B6B6B', fontSize: '16px' }}>Loading orders...</p>
+            ) : orders.length === 0 ? (
+              <div style={{
+                background: '#FFFFFF', borderRadius: '20px',
+                border: '0.5px solid #E8E8E4', padding: '48px', textAlign: 'center'
+              }}>
+                <p style={{ fontSize: '18px', color: '#6B6B6B', margin: 0 }}>No orders yet</p>
               </div>
-            ))}
+            ) : (
+              orders.map((item, i) => (
+                <div key={i} style={{ background: '#F5F5CC', borderRadius: '14px', padding: '18px 20px' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                    <span style={{ fontSize: '15px', fontWeight: '700', color: '#1A1A1A', textTransform: 'uppercase' }}>
+                      {item.product?.name}
+                    </span>
+                    <span style={{ fontSize: '15px', fontWeight: '700', color: '#1A1A1A' }}>
+                      ${item.product?.price?.toFixed(2)}
+                    </span>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span style={{ fontSize: '14px', color: '#6B6B6B' }}>
+                      {item.product?.variant} × {item.quantity}
+                    </span>
+                    <span style={{
+                      fontSize: '11px', fontWeight: '700', textTransform: 'uppercase',
+                      letterSpacing: '0.04em', padding: '4px 12px', borderRadius: '999px',
+                      background: 'transparent', color: '#1A4D3A', border: '1.5px solid #C5EBDA'
+                    }}>In Cart</span>
+                  </div>
+                </div>
+              ))
+            )}
           </div>
         )}
 
@@ -301,18 +308,10 @@ const greenBtnStyle = {
 }
 
 const dangerBtnStyle = {
-  width: '100%',
-  background: 'transparent',
-  color: '#1A1A1A',
-  border: '1.5px solid #1A1A1A',
-  padding: '12px',
-  borderRadius: '999px',
-  fontSize: '14px',
-  fontWeight: '700',
-  textTransform: 'uppercase',
-  letterSpacing: '0.05em',
-  cursor: 'pointer',
-  fontFamily: 'inherit'
+  width: '100%', background: 'transparent', color: '#1A1A1A',
+  border: '1.5px solid #1A1A1A', padding: '12px', borderRadius: '999px',
+  fontSize: '14px', fontWeight: '700', textTransform: 'uppercase',
+  letterSpacing: '0.05em', cursor: 'pointer', fontFamily: 'inherit'
 }
 
 const errorStyle = {
