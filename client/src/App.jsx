@@ -3,6 +3,7 @@ import { useState } from 'react'
 import Navbar from './components/Navbar'
 import ProtectedRoute from './components/ProtectedRoute'
 import CartSidebar from './components/CartSidebar'
+import HomePage from './components/HomePage'
 
 import LoginPage from './pages/LoginPage'
 import RegisterPage from './pages/RegisterPage'
@@ -21,6 +22,7 @@ function App() {
       <CartSidebar isOpen={cartOpen} onClose={() => setCartOpen(false)} />
       <Routes>
         <Route path='/admin/*' element={null} />
+        <Route path='/welcome' element={null} />
         <Route path='*' element={<Navbar onCartOpen={() => setCartOpen(true)} />} />
       </Routes>
 
@@ -28,6 +30,11 @@ function App() {
         <Route path='/' element={<LoginPage />} />
         <Route path='/login' element={<LoginPage />} />
         <Route path='/register' element={<RegisterPage />} />
+        <Route path='/welcome' element={
+          <ProtectedRoute>
+            <HomePage />
+          </ProtectedRoute>
+        } />
         <Route path='/products' element={
           <ProtectedRoute>
             <ProductsPage />

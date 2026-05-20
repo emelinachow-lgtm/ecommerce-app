@@ -7,15 +7,8 @@
   font-family: 'Open Sans Condensed', sans-serif;
 }
 
-body {
-  background: #FAFAF5;
-  color: #1A1A1A;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-#root {
-  min-height: 100vh;
+html {
+  overflow-y: auto;
 }
 
 body {
@@ -24,4 +17,8 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   font-size: 16px;
+}
+
+#root {
+  min-height: 100vh;
 }

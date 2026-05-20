@@ -55,7 +55,7 @@ function LoginPage() {
 
   if (token) {
     const storedUser = JSON.parse(localStorage.getItem('user'))
-    return <Navigate to={storedUser?.role === 'admin' ? '/admin' : '/products'} />
+    return <Navigate to={storedUser?.role === 'admin' ? '/admin' : '/welcome'} />
   }
 
   const handleSubmit = async (e) => {
@@ -70,8 +70,9 @@ function LoginPage() {
     try {
       setLoading(true)
       const res = await api.post('/auth/login', { email, password })
+      console.log('navigating to:', res.data.user.role === 'admin' ? '/admin' : '/welcome')
       login(res.data.user, res.data.token)
-      navigate(res.data.user.role === 'admin' ? '/admin' : '/products')
+      navigate(res.data.user.role === 'admin' ? '/admin' : '/welcome')
     } catch (err) {
       setError(err.response?.data?.message || 'Invalid email or password')
     } finally {
