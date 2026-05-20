@@ -2,18 +2,13 @@
   PROFILE PAGE — Khushi
   ----------------------
   Customer profile page with three tabs:
-  - Account Details — view and edit name, email, delivery address
-  - Order History — view past orders (from cart data)
+  - Account Details — view and edit name, email
+  - Order History — view current cart items
   - Password — change password
-
-  DEPENDENCIES:
-  - useAuth from context/useAuth — gets logged in user
-  - api.js — axios instance for API calls
-  - React Router — redirect after logout
 
   ENDPOINTS USED:
   - GET    /api/users/:id        — fetch user details on mount
-  - PUT    /api/users/:id        — update name, email
+  - PUT    /api/users/:id        — update name, email, password
   - GET    /api/cart             — fetch order history
 */
 
@@ -23,7 +18,7 @@ import { useAuth } from '../context/useAuth'
 import api from '../api'
 
 function ProfilePage() {
-  const { user, logout } = useAuth()
+  const { user, logout, login } = useAuth()
   const navigate = useNavigate()
   const [activeTab, setActiveTab] = useState('account')
 
@@ -89,10 +84,16 @@ function ProfilePage() {
     }
     try {
       setAccountLoading(true)
-      await api.put(`/users/${user.id}`, {
+      const res = await api.put(`/users/${user.id}`, {
         name: `${firstName} ${lastName}`.trim(),
         email
       })
+      // update auth context and localStorage with new details
+      const updatedUser = { ...user, name: res.data.name, email: res.data.email }
+      localStorage.setItem('user', JSON.stringify(updatedUser))
+      setFirstName(res.data.name.split(' ')[0] || '')
+      setLastName(res.data.name.split(' ').slice(1).join(' ') || '')
+      setEmail(res.data.email)
       setAccountSuccess('Account details updated successfully')
     } catch (err) {
       setAccountError(err.response?.data?.message || 'Failed to update account')
@@ -157,7 +158,12 @@ function ProfilePage() {
         }}>{email}</p>
 
         {/* tabs */}
-        <div style={{ display: 'flex', borderBottom: '1.5px solid #1A1A1A', marginBottom: '24px' }}>
+        <div style={{
+          display: 'flex',
+          borderBottom: '1.5px solid #1A1A1A',
+          marginBottom: '24px',
+          justifyContent: 'center'
+        }}>
           {['account', 'orders', 'password'].map(tab => (
             <button
               key={tab}

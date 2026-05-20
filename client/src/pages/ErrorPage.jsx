@@ -1,5 +1,5 @@
 /*
-  ERROR PAGE — Sahil
+  ERROR PAGE — Khushi
   -------------------
   404 page shown when a route doesn't exist.
 
