@@ -388,19 +388,21 @@ function CartPage() {
             </span>
           </div>
 
-          <button style={{
-            background: '#C5EBDA',
-            color: '#1A1A1A',
-            border: 'none',
-            padding: '18px 32px',
-            borderRadius: '999px',
-            fontSize: '18px',
-            fontWeight: '900',
-            textTransform: 'uppercase',
-            letterSpacing: '0.06em',
-            cursor: 'pointer',
-            width: '100%'
-          }}>Check Out</button>
+          <button
+            onClick={() => { onClose(); navigate('/checkout') }}
+            style={{
+              background: '#C5EBDA',
+              color: '#1A1A1A',
+              border: 'none',
+              padding: '18px 32px',
+              borderRadius: '999px',
+              fontSize: '18px',
+              fontWeight: '900',
+              textTransform: 'uppercase',
+              letterSpacing: '0.06em',
+              cursor: 'pointer',
+              width: '100%'
+            }}>Check Out</button>
         </div>
       </div>
     </div>

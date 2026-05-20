@@ -13,6 +13,7 @@ import CartPage from './pages/CartPage'
 import ProfilePage from './pages/ProfilePage'
 import AdminPage from './pages/AdminPage'
 import ErrorPage from './pages/ErrorPage'
+import CheckoutPage from './pages/CheckoutPage'
 
 function App() {
   const [cartOpen, setCartOpen] = useState(false)
@@ -61,6 +62,11 @@ function App() {
           </ProtectedRoute>
         } />
         <Route path='*' element={<ErrorPage />} />
+        <Route path='/checkout' element={
+          <ProtectedRoute>
+            <CheckoutPage />
+          </ProtectedRoute>
+        } />
       </Routes>
     </BrowserRouter>
   )

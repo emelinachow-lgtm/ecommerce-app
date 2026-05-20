@@ -288,12 +288,15 @@ function CartSidebar({ isOpen, onClose }) {
             <p style={{ fontSize: '14px', color: '#6B6B6B', margin: '0 0 16px' }}>
               Tax included. Shipping calculated at checkout.
             </p>
-            <button style={{
-              background: '#C5EBDA', color: '#1A1A1A', border: 'none',
-              padding: '18px 30px', borderRadius: '999px', fontSize: '18px',
-              fontWeight: '900', textTransform: 'uppercase', letterSpacing: '0.06em',
-              cursor: 'pointer', width: '100%', marginBottom: '12px'
-            }}>Check Out</button>
+            <button
+              onClick={() => { onClose(); navigate('/checkout') }}
+              style={{
+                background: '#C5EBDA', color: '#1A1A1A', border: 'none',
+                padding: '18px 30px', borderRadius: '999px', fontSize: '18px',
+                fontWeight: '900', textTransform: 'uppercase', letterSpacing: '0.06em',
+                cursor: 'pointer', width: '100%', marginBottom: '12px',
+                fontFamily: 'inherit'
+              }}>Check Out</button>
             <div style={{ textAlign: 'center' }}>
               <button
                 onClick={handleViewCart}
