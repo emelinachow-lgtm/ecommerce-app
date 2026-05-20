@@ -11,13 +11,6 @@
 
   ENDPOINTS USED:
   - POST /api/auth/register — create account, return JWT
-
-  FLOW:
-  - User submits name, email, password, confirm password
-  - Validates passwords match before submitting
-  - On success: call login() from useAuth, redirect to /products
-  - On failure: show error message below form
-  - If already logged in: redirect to /products automatically
 */
 
 import { useState } from 'react'
@@ -46,17 +39,32 @@ const beans = [
   { top: '89%', left: '74%', size: 85,  rotate: -20 },
 ]
 
+const EyeIcon = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#6B6B6B" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+    <circle cx="12" cy="12" r="3"/>
+  </svg>
+)
+
+const EyeOffIcon = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#6B6B6B" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19m-6.72-1.07a3 3 0 11-4.24-4.24"/>
+    <line x1="1" y1="1" x2="23" y2="23"/>
+  </svg>
+)
+
 function RegisterPage() {
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
+  const [showPassword, setShowPassword] = useState(false)
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
   const { login, token } = useAuth()
   const navigate = useNavigate()
 
-  // if already logged in redirect to products
   if (token) return <Navigate to='/products' />
 
   const handleSubmit = async (e) => {
@@ -102,7 +110,6 @@ function RegisterPage() {
       overflow: 'hidden'
     }}>
 
-      {/* scattered coffee beans */}
       {beans.map((bean, i) => (
         <img
           key={i}
@@ -124,7 +131,6 @@ function RegisterPage() {
         />
       ))}
 
-      {/* register card */}
       <div style={{
         background: '#FFFFFF',
         borderRadius: '20px',
@@ -137,7 +143,6 @@ function RegisterPage() {
         boxShadow: '0 8px 40px rgba(0,0,0,0.06)'
       }}>
 
-        {/* heading */}
         <p style={{
           fontSize: '52px',
           fontWeight: '400',
@@ -149,7 +154,6 @@ function RegisterPage() {
           lineHeight: 1
         }}>Sign Up</p>
 
-        {/* error message */}
         {error && (
           <p style={{
             fontSize: '14px',
@@ -187,24 +191,62 @@ function RegisterPage() {
 
           <div style={{ marginBottom: '16px' }}>
             <label style={labelStyle}>Password</label>
-            <input
-              type="password"
-              placeholder="at least 8 characters"
-              value={password}
-              onChange={e => setPassword(e.target.value)}
-              style={inputStyle}
-            />
+            <div style={{ position: 'relative' }}>
+              <input
+                type={showPassword ? 'text' : 'password'}
+                placeholder="at least 8 characters"
+                value={password}
+                onChange={e => setPassword(e.target.value)}
+                style={{ ...inputStyle, paddingRight: '44px' }}
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                style={{
+                  position: 'absolute',
+                  right: '12px',
+                  top: '50%',
+                  transform: 'translateY(-50%)',
+                  background: 'none',
+                  border: 'none',
+                  cursor: 'pointer',
+                  padding: 0,
+                  display: 'flex',
+                  alignItems: 'center'
+                }}>
+                {showPassword ? <EyeOffIcon /> : <EyeIcon />}
+              </button>
+            </div>
           </div>
 
           <div style={{ marginBottom: '24px' }}>
             <label style={labelStyle}>Confirm Password</label>
-            <input
-              type="password"
-              placeholder="re-enter your password"
-              value={confirmPassword}
-              onChange={e => setConfirmPassword(e.target.value)}
-              style={inputStyle}
-            />
+            <div style={{ position: 'relative' }}>
+              <input
+                type={showConfirmPassword ? 'text' : 'password'}
+                placeholder="re-enter your password"
+                value={confirmPassword}
+                onChange={e => setConfirmPassword(e.target.value)}
+                style={{ ...inputStyle, paddingRight: '44px' }}
+              />
+              <button
+                type="button"
+                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                style={{
+                  position: 'absolute',
+                  right: '12px',
+                  top: '50%',
+                  transform: 'translateY(-50%)',
+                  background: 'none',
+                  border: 'none',
+                  cursor: 'pointer',
+                  padding: 0,
+                  display: 'flex',
+                  alignItems: 'center'
+                }}>
+                {showConfirmPassword ? <EyeOffIcon /> : <EyeIcon />}
+              </button>
+            </div>
           </div>
 
           <button
@@ -231,19 +273,11 @@ function RegisterPage() {
 
         </form>
 
-        {/* log in link */}
-        <p style={{
-          fontSize: '15px',
-          color: '#1A1A1A',
-          textAlign: 'center',
-          margin: 0
-        }}>
+        <p style={{ fontSize: '15px', color: '#1A1A1A', textAlign: 'center', margin: 0 }}>
           Already have an account?{' '}
-          <Link to="/login" style={{
-            color: '#2980B9',
-            fontWeight: '700',
-            textDecoration: 'none'
-          }}>Log in</Link>
+          <Link to="/login" style={{ color: '#2980B9', fontWeight: '700', textDecoration: 'none' }}>
+            Log in
+          </Link>
         </p>
 
       </div>
@@ -252,24 +286,14 @@ function RegisterPage() {
 }
 
 const labelStyle = {
-  display: 'block',
-  fontSize: '15px',
-  fontWeight: '600',
-  color: '#1A1A1A',
-  marginBottom: '6px'
+  display: 'block', fontSize: '15px', fontWeight: '600',
+  color: '#1A1A1A', marginBottom: '6px'
 }
 
 const inputStyle = {
-  width: '100%',
-  background: '#FFFFFF',
-  border: '1px solid #D0D0D0',
-  borderRadius: '8px',
-  padding: '12px 14px',
-  fontSize: '15px',
-  color: '#1A1A1A',
-  fontFamily: 'inherit',
-  boxSizing: 'border-box',
-  outline: 'none'
+  width: '100%', background: '#FFFFFF', border: '1px solid #D0D0D0',
+  borderRadius: '8px', padding: '12px 14px', fontSize: '15px',
+  color: '#1A1A1A', fontFamily: 'inherit', boxSizing: 'border-box', outline: 'none'
 }
 
 export default RegisterPage
