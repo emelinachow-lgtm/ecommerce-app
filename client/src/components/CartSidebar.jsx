@@ -17,20 +17,21 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import api from '../api'
+import { useAuth } from '../context/useAuth'
 
 function CartSidebar({ isOpen, onClose }) {
   const [cart, setCart] = useState({ items: [] })
   const [loading, setLoading] = useState(false)
   const navigate = useNavigate()
+  const { token } = useAuth()
 
   const subtotal = cart.items.reduce(
     (sum, item) => sum + item.product.price * item.quantity, 0
   )
 
-  // fetch cart when sidebar opens
   useEffect(() => {
     async function fetchCart() {
-      if (!isOpen) return
+      if (!isOpen || !token) return
       try {
         setLoading(true)
         const res = await api.get('/cart')
@@ -42,7 +43,62 @@ function CartSidebar({ isOpen, onClose }) {
       }
     }
     fetchCart()
+  }, [isOpen, token])
+
+  useEffect(() => {
+    document.body.style.overflow = isOpen ? 'hidden' : 'unset'
+    return () => { document.body.style.overflow = 'unset' }
   }, [isOpen])
+
+  if (!isOpen) return null
+
+  if (!token) return (
+    <>
+      <div onClick={onClose} style={{
+        position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+        background: 'rgba(0,0,0,0.45)', zIndex: 100
+      }} />
+      <div style={{
+        position: 'fixed', top: 0, right: 0, bottom: 0, width: '440px',
+        background: '#FFFFFF', zIndex: 101, display: 'flex',
+        flexDirection: 'column', boxShadow: '-4px 0 30px rgba(0,0,0,0.1)'
+      }}>
+        {/* header */}
+        <div style={{ padding: '28px 28px 20px', borderBottom: '2px solid #1A1A1A' }}>
+          <p style={{
+            fontSize: '50px', fontWeight: '400', color: '#1A1A1A',
+            textTransform: 'uppercase', letterSpacing: '0.02em',
+            margin: 0, fontFamily: 'Jomhuria, serif', lineHeight: 1
+          }}>Your Cart</p>
+        </div>
+        <div style={{
+          flex: 1, display: 'flex', flexDirection: 'column',
+          alignItems: 'center', justifyContent: 'center',
+          gap: '16px', textAlign: 'center', padding: '40px'
+        }}>
+          <div style={{ fontSize: '56px' }}>
+            <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#1A1A1A" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="9" cy="21" r="1"/>
+              <circle cx="20" cy="21" r="1"/>
+              <path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"/>
+            </svg>
+          </div>
+          <p style={{
+            fontSize: '30px', fontWeight: '900', color: '#1A1A1A',
+            textTransform: 'uppercase', letterSpacing: '0.02em', margin: 0
+          }}>Please log in to view your cart</p>
+          <button
+            onClick={() => { onClose(); navigate('/login') }}
+            style={{
+              background: '#C5EBDA', color: '#1A1A1A', border: 'none',
+              padding: '14px 32px', borderRadius: '999px', fontSize: '16px',
+              fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.05em',
+              cursor: 'pointer', fontFamily: 'inherit'
+            }}>Log In</button>
+        </div>
+      </div>
+    </>
+  )
 
   const handleQuantityChange = async (itemId, newQty) => {
     if (newQty < 1) return
@@ -75,13 +131,6 @@ function CartSidebar({ isOpen, onClose }) {
     onClose()
     navigate('/cart')
   }
-
-  useEffect(() => {
-    document.body.style.overflow = isOpen ? 'hidden' : 'unset'
-    return () => { document.body.style.overflow = 'unset' }
-  }, [isOpen])
-
-  if (!isOpen) return null
 
   return (
     <>
@@ -126,7 +175,13 @@ function CartSidebar({ isOpen, onClose }) {
               display: 'flex', flexDirection: 'column', alignItems: 'center',
               justifyContent: 'center', height: '100%', gap: '16px', textAlign: 'center'
             }}>
-              <div style={{ fontSize: '56px' }}>🛒</div>
+              <div style={{ fontSize: '56px' }}>
+                <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#1A1A1A" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="9" cy="21" r="1"/>
+                  <circle cx="20" cy="21" r="1"/>
+                  <path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"/>
+                </svg>
+              </div>
               <p style={{
                 fontSize: '30px', fontWeight: '900', color: '#1A1A1A',
                 textTransform: 'uppercase', letterSpacing: '0.02em', margin: 0
