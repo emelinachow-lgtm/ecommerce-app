@@ -156,9 +156,13 @@ function Navbar({ onCartOpen }) {
 
           {/* search icon */}
           <button
-            onClick={() => setSearchOpen(!searchOpen)}
-            style={iconBtnStyle}
-            title="Search">
+            onClick={() => token && setSearchOpen(!searchOpen)}
+            style={{
+              ...iconBtnStyle,
+              opacity: token ? 1 : 0.4,
+              cursor: token ? 'pointer' : 'not-allowed'
+            }}
+            title={token ? 'Search' : 'Log in to search'}>
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1A1A1A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <circle cx="11" cy="11" r="8"/>
               <line x1="21" y1="21" x2="16.65" y2="16.65"/>
