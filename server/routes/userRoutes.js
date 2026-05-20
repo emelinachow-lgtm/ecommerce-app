@@ -37,32 +37,47 @@ router.get('/', authMiddleware, adminMiddleware, async (req, res) => {
   }
 })
 
+// GET /api/users/:id — get own profile
+router.get('/:id', authMiddleware, async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id).select('-password')
+    if (!user) return res.status(404).json({ message: 'User not found' })
+    res.json(user)
+  } catch (err) {
+    res.status(500).json({ message: 'Server error' })
+  }
+})
+
 // PUT /api/users/:id — update own profile
 router.put('/:id', authMiddleware, async (req, res) => {
   try {
+    console.log('PUT /users/:id hit')
+    console.log('req.body:', req.body)
+    console.log('req.params.id:', req.params.id)
+
     const { name, email, password } = req.body
 
-    // build update object
     const updates = {}
     if (name) updates.name = name
     if (email) updates.email = email
 
-    // hash new password if provided
     if (password) {
       updates.password = await bcrypt.hash(password, 10)
     }
 
-    // update user and return updated document
     const user = await User.findByIdAndUpdate(
       req.params.id,
       updates,
       { new: true }
     ).select('-password')
 
+    console.log('updated user:', user)
+
     if (!user) return res.status(404).json({ message: 'User not found' })
 
     res.json(user)
   } catch (err) {
+    console.error('PUT /users error:', err)
     res.status(500).json({ message: 'Server error' })
   }
 })
