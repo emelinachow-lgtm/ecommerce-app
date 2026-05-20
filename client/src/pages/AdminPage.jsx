@@ -42,6 +42,7 @@ function AdminPage() {
   const [selectedProduct, setSelectedProduct] = useState(null)
   const navigate = useNavigate()
   const { user, logout } = useAuth()
+  const [selectedCart, setSelectedCart] = useState(null)
 
   useEffect(() => {
     async function fetchData() {
@@ -283,7 +284,7 @@ function AdminPage() {
                   <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                     <thead>
                       <tr style={{ background: '#F5F5F3' }}>
-                        {['Customer', 'Items in cart', 'Qty', 'Cart total', 'Status', ''].map((h, i) => (
+                        {['Customer', 'Items in cart', 'Cart total', 'Status', ''].map((h, i) => (
                           <th key={i} style={{
                             padding: '12px 18px', textAlign: 'left', fontSize: '14px',
                             fontWeight: '700', color: '#6B6B6B', textTransform: 'uppercase',
@@ -298,6 +299,7 @@ function AdminPage() {
                           return sum + (item.product?.price || 0) * item.quantity
                         }, 0)
                         const isActive = cart.items.length > 0
+                        const totalItems = cart.items.reduce((sum, item) => sum + item.quantity, 0)
                         return (
                           <tr key={cart._id} style={{ borderBottom: '0.5px solid #E8E8E4' }}>
                             <td style={{ padding: '16px 18px' }}>
@@ -309,28 +311,9 @@ function AdminPage() {
                               </p>
                             </td>
                             <td style={{ padding: '16px 18px' }}>
-                              {cart.items.length === 0 ? (
-                                <span style={{ fontSize: '14px', color: '#6B6B6B', fontStyle: 'italic' }}>No items</span>
-                              ) : (
-                                <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
-                                  {cart.items.map(item => (
-                                    <span key={item._id} style={{ fontSize: '14px', color: '#1A1A1A' }}>
-                                      {item.product?.name} — {item.product?.variant}
-                                    </span>
-                                  ))}
-                                </div>
-                              )}
-                            </td>
-                            <td style={{ padding: '16px 18px' }}>
-                              {cart.items.length === 0 ? (
-                                <span style={{ fontSize: '14px', color: '#6B6B6B' }}>—</span>
-                              ) : (
-                                <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
-                                  {cart.items.map(item => (
-                                    <span key={item._id} style={{ fontSize: '14px', color: '#6B6B6B' }}>× {item.quantity}</span>
-                                  ))}
-                                </div>
-                              )}
+                              <span style={{ fontSize: '14px', color: isActive ? '#1A1A1A' : '#6B6B6B', fontStyle: isActive ? 'normal' : 'italic' }}>
+                                {isActive ? `${totalItems} item${totalItems !== 1 ? 's' : ''}` : 'No items'}
+                              </span>
                             </td>
                             <td style={{ padding: '16px 18px' }}>
                               <span style={{ fontSize: '16px', fontWeight: '700', color: cartTotal === 0 ? '#6B6B6B' : '#1A1A1A' }}>
@@ -347,14 +330,16 @@ function AdminPage() {
                               }}>{isActive ? 'Active' : 'Empty'}</span>
                             </td>
                             <td style={{ padding: '16px 18px' }}>
-                              <button style={{
-                                background: isActive ? '#C5EBDA' : 'transparent',
-                                color: '#1A1A1A',
-                                border: isActive ? 'none' : '0.5px solid #E8E8E4',
-                                padding: '8px 16px', borderRadius: '999px', fontSize: '13px',
-                                fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.04em',
-                                cursor: isActive ? 'pointer' : 'default'
-                              }}>
+                              <button
+                                onClick={() => isActive && setSelectedCart(cart)}
+                                style={{
+                                  background: isActive ? '#C5EBDA' : 'transparent',
+                                  color: '#1A1A1A',
+                                  border: isActive ? 'none' : '0.5px solid #E8E8E4',
+                                  padding: '8px 16px', borderRadius: '999px', fontSize: '13px',
+                                  fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.04em',
+                                  cursor: isActive ? 'pointer' : 'default'
+                                }}>
                                 {isActive ? 'View Order' : '—'}
                               </button>
                             </td>
@@ -453,6 +438,84 @@ function AdminPage() {
           )}
         </div>
       </div>
+
+        {/* cart order modal */}
+        {selectedCart && (
+          <>
+            <div
+              onClick={() => setSelectedCart(null)}
+              style={{
+                position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+                background: 'rgba(0,0,0,0.45)', zIndex: 200
+              }}
+            />
+            <div style={{
+              position: 'fixed', top: '50%', left: '50%',
+              transform: 'translate(-50%, -50%)',
+              background: '#FFFFFF', borderRadius: '20px',
+              padding: '32px', width: '520px', maxWidth: '90vw',
+              maxHeight: '80vh', overflowY: 'auto',
+              zIndex: 201, boxShadow: '0 20px 60px rgba(0,0,0,0.2)'
+            }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '24px' }}>
+                <div>
+                  <p style={{
+                    fontSize: '28px', fontWeight: '400', color: '#1A1A1A',
+                    textTransform: 'uppercase', fontFamily: 'Jomhuria, serif',
+                    margin: '0 0 4px', lineHeight: 1
+                  }}>{selectedCart.user?.name}'s Order</p>
+                  <p style={{ fontSize: '14px', color: '#6B6B6B', margin: 0 }}>
+                    {selectedCart.user?.email}
+                  </p>
+                </div>
+                <button
+                  onClick={() => setSelectedCart(null)}
+                  style={{
+                    background: 'none', border: 'none', cursor: 'pointer',
+                    fontSize: '24px', color: '#6B6B6B', padding: 0, lineHeight: 1
+                  }}>×</button>
+              </div>
+
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '24px' }}>
+                {selectedCart.items.map(item => (
+                  <div key={item._id} style={{
+                    display: 'flex', alignItems: 'center', gap: '14px',
+                    background: '#F5F5CC', borderRadius: '12px', padding: '14px'
+                  }}>
+                    <img
+                      src={item.product?.image}
+                      alt={item.product?.name}
+                      style={{ width: '60px', height: '60px', objectFit: 'cover', borderRadius: '8px', flexShrink: 0 }}
+                    />
+                    <div style={{ flex: 1 }}>
+                      <p style={{
+                        fontSize: '22px', fontWeight: '400', color: '#1A1A1A',
+                        textTransform: 'uppercase', fontFamily: 'Jomhuria, serif',
+                        margin: '0 0 2px', lineHeight: 1
+                      }}>{item.product?.name}</p>
+                      <p style={{ fontSize: '13px', color: '#6B6B6B', margin: 0 }}>
+                        {item.product?.variant} · Qty: {item.quantity}
+                      </p>
+                    </div>
+                    <p style={{ fontSize: '15px', fontWeight: '700', color: '#1A1A1A', margin: 0, flexShrink: 0 }}>
+                      ${(item.product?.price * item.quantity).toFixed(2)}
+                    </p>
+                  </div>
+                ))}
+              </div>
+
+              <div style={{
+                borderTop: '1.5px solid #E8E8E4', paddingTop: '16px',
+                display: 'flex', justifyContent: 'space-between', alignItems: 'center'
+              }}>
+                <span style={{ fontSize: '16px', fontWeight: '700', color: '#1A1A1A' }}>Total</span>
+                <span style={{ fontSize: '20px', fontWeight: '900', color: '#1A1A1A' }}>
+                  ${selectedCart.items.reduce((sum, item) => sum + (item.product?.price || 0) * item.quantity, 0).toFixed(2)} AUD
+                </span>
+              </div>
+            </div>
+          </>
+        )}
 
       {/* modals */}
       <AddEditProductModal
