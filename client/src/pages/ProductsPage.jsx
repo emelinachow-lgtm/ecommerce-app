@@ -30,7 +30,8 @@ function ProductsPage() {
   const [searchTerm, setSearchTerm] = useState('')
   const [activeCategory, setActiveCategory] = useState('View All')
   const [searchOpen, setSearchOpen] = useState(false)
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(true)
+  const [showSpinner, setShowSpinner] = useState(false)
   const [error, setError] = useState(null)
   const [cartMessage, setCartMessage] = useState('')
   const navigate = useNavigate()
@@ -39,6 +40,7 @@ function ProductsPage() {
 
   // debounced search
   useEffect(() => {
+    const spinnerTimer = setTimeout(() => setShowSpinner(true), 500)
     const timer = setTimeout(async () => {
       setLoading(true)
       try {
@@ -49,9 +51,14 @@ function ProductsPage() {
         setError('Failed to load products. Please try again.')
       } finally {
         setLoading(false)
+        setShowSpinner(false)
+        clearTimeout(spinnerTimer)
       }
     }, 300)
-    return () => clearTimeout(timer)
+    return () => {
+      clearTimeout(timer)
+      clearTimeout(spinnerTimer)
+    }
   }, [searchTerm])
 
   const handleAddToCart = async (productId) => {
@@ -200,7 +207,7 @@ function ProductsPage() {
       </div>
 
       {/* loading */}
-      {loading && <LoadingSpinner />}
+      {loading && showSpinner && <LoadingSpinner />}
 
       {/* no results */}
       {!loading && displayed.length === 0 && (
