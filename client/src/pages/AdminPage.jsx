@@ -3,15 +3,8 @@
   --------------------------
   Admin-only page showing all customer carts and product management.
 
-  DEPENDENCIES:
-  - authMiddleware + adminMiddleware from Sahil
-  - Cart routes GET /api/admin/carts from cartRoutes.js
-  - Product routes from productRoutes.js
-  - AddEditProductModal from Sahil
-  - DeleteProductModal from Sahil
-
   ENDPOINTS USED:
-  - GET    /api/admin/carts       — fetch all users carts (admin only)
+  - GET    /api/cart/admin/carts  — fetch all users carts (admin only)
   - GET    /api/products          — fetch all products + stat count
   - GET    /api/users             — fetch all users for stat count
   - POST   /api/products          — add new product
@@ -121,8 +114,12 @@ function AdminPage() {
       const productsRes = await api.get('/products')
       setProducts(productsRes.data)
       setStats(prev => ({ ...prev, totalProducts: productsRes.data.length }))
+      setToast('Product deleted successfully')
+      setTimeout(() => setToast(''), 3000)
     } catch (err) {
       console.error('Failed to delete product:', err)
+      setToast('Failed to delete product')
+      setTimeout(() => setToast(''), 3000)
     }
   }
 

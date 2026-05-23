@@ -7,7 +7,7 @@
   - searchTerm (string) — the term the user searched for
 
   USED BY:
-  - client/src/pages/ProductsPage.jsx — Shraddha imports this
+  - client/src/pages/ProductsPage.jsx
 */
 
 import { useNavigate } from 'react-router-dom'
