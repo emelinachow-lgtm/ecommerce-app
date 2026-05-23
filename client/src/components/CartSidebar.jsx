@@ -84,8 +84,8 @@ function CartSidebar({ isOpen, onClose }) {
             </svg>
           </div>
           <p style={{
-            fontSize: '30px', fontWeight: '900', color: '#1A1A1A',
-            textTransform: 'uppercase', letterSpacing: '0.02em', margin: 0
+            fontSize: '40px', fontWeight: '400', color: '#1A1A1A',
+            textTransform: 'uppercase',fontFamily: 'Jomhuria, serif', letterSpacing: '0.02em', margin: 0
           }}>Please log in to view your cart</p>
           <button
             onClick={() => { onClose(); navigate('/login') }}
@@ -183,8 +183,8 @@ function CartSidebar({ isOpen, onClose }) {
                 </svg>
               </div>
               <p style={{
-                fontSize: '30px', fontWeight: '900', color: '#1A1A1A',
-                textTransform: 'uppercase', letterSpacing: '0.02em', margin: 0
+                fontSize: '40px', fontWeight: '400', color: '#1A1A1A',
+                textTransform: 'uppercase',fontFamily: 'Jomhuria, serif', letterSpacing: '0.02em', margin: 0
               }}>Your cart is currently empty</p>
               <button
                 onClick={() => { onClose(); navigate('/products') }}
