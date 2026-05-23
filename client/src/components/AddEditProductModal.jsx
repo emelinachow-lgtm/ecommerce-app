@@ -11,7 +11,7 @@
   - existingProduct (object|null) — null = add mode, object = edit mode
 
   USED BY:
-  - client/src/pages/AdminPage.jsx — Emelina imports this
+  - client/src/pages/AdminPage.jsx
 
   NOTE:
   - This modal does NOT make API calls itself

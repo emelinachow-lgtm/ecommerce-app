@@ -1,3 +1,21 @@
+/*
+  HOME PAGE / LANDING ANIMATION — Khushi
+  ----------------------------------------
+  Scroll-driven landing animation shown to customers after login.
+  Auto-scrolls through 4 sections over 10 seconds then redirects to /products.
+  Skip button allows users to bypass the animation.
+
+  SECTIONS:
+  1. Coffee plant scene with animated cherry elements
+  2. Funnel scene — cherries spiral into a coffee filter
+  3. Parallax scene with coffee imagery
+  4. Final scene with lower plant elements
+
+  CONNECTED TO:
+  - App.jsx — rendered at /welcome route (protected)
+  - LoginPage.jsx — customers redirected here after login
+*/
+
 import { useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 
@@ -197,7 +215,6 @@ function HomePage() {
 
     const scrollTimer = setTimeout(() => {
       const totalScroll = document.documentElement.scrollHeight - window.innerHeight
-      console.log('totalScroll:', totalScroll)
 
       if (totalScroll <= 0) {
         navigate('/products')

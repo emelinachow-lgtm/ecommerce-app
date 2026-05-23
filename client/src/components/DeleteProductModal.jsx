@@ -10,7 +10,7 @@
   - productName (string) — shown in the description text
 
   USED BY:
-  - client/src/pages/AdminPage.jsx — Emelina imports this
+  - client/src/pages/AdminPage.jsx
 */
 
 function DeleteProductModal({ isOpen, onClose, onConfirm, productName }) {

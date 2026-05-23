@@ -2,6 +2,14 @@
   LOGIN PAGE — Sahil
   -------------------
   Handles customer and admin login.
+  Redirects admin users to /admin and customers to /welcome after login.
+
+  ENDPOINTS USED:
+  - POST /api/auth/login — verify credentials, return JWT
+
+  CONNECTED TO:
+  - client/src/context/AuthProvider.jsx — stores JWT after login
+  - client/src/pages/RegisterPage.jsx — link to register
 */
 
 import { useState } from 'react'
@@ -70,7 +78,6 @@ function LoginPage() {
     try {
       setLoading(true)
       const res = await api.post('/auth/login', { email, password })
-      console.log('navigating to:', res.data.user.role === 'admin' ? '/admin' : '/welcome')
       login(res.data.user, res.data.token)
       navigate(res.data.user.role === 'admin' ? '/admin' : '/welcome')
     } catch (err) {

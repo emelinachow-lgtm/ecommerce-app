@@ -1,7 +1,15 @@
 /*
   CHECKOUT PAGE — Emelina
   ------------------------
-  Simple order confirmation page shown after checkout.
+  Order confirmation page shown after clicking checkout.
+  Displays order summary, random order number and delivery info.
+
+  ENDPOINTS USED:
+  - GET /api/cart — fetch current cart items for order summary
+
+  CONNECTED TO:
+  - client/src/components/CartSidebar.jsx — checkout button
+  - client/src/pages/CartPage.jsx — checkout button
 */
 
 import { useEffect, useState } from 'react'
@@ -33,7 +41,7 @@ function CheckoutPage() {
     (sum, item) => sum + (item.product?.price || 0) * item.quantity, 0
   )
 
-  const orderNumber = `EY-${Math.floor(1000 + Math.random() * 9000)}`
+  const [orderNumber] = useState(`EY-${Math.floor(1000 + Math.random() * 9000)}`)
 
   return (
     <div style={{ minHeight: '100vh', background: '#FAFAF5' }}>

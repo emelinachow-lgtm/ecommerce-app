@@ -56,17 +56,17 @@ function App() {
             <ProfilePage />
           </ProtectedRoute>
         } />
+        <Route path='/checkout' element={
+          <ProtectedRoute>
+            <CheckoutPage />
+          </ProtectedRoute>
+        } />
         <Route path='/admin' element={
           <ProtectedRoute adminOnly={true}>
             <AdminPage />
           </ProtectedRoute>
         } />
         <Route path='*' element={<ErrorPage />} />
-        <Route path='/checkout' element={
-          <ProtectedRoute>
-            <CheckoutPage />
-          </ProtectedRoute>
-        } />
       </Routes>
     </BrowserRouter>
   )

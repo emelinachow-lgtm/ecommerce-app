@@ -3,11 +3,6 @@
   --------------------
   Displays the logged in user's full cart.
 
-  DEPENDENCIES:
-  - authMiddleware from Sahil — JWT verified automatically via api.js
-  - Cart routes from server/routes/cartRoutes.js
-  - api.js handles JWT token automatically on every request
-
   ENDPOINTS USED:
   - GET    /api/cart              — fetch cart on page load
   - PUT    /api/cart/:itemId      — update item quantity
@@ -22,8 +17,6 @@ function CartPage() {
   const [cart, setCart] = useState({ items: [] })
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
-  const [notesOpen, setNotesOpen] = useState(false)
-  const [notes, setNotes] = useState('')
   const navigate = useNavigate()
 
   // fetch cart on page load
