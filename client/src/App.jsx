@@ -14,6 +14,7 @@ import ProfilePage from './pages/ProfilePage'
 import AdminPage from './pages/AdminPage'
 import ErrorPage from './pages/ErrorPage'
 import CheckoutPage from './pages/CheckoutPage'
+import SubscribePage from './pages/SubscribePage'
 
 function App() {
   const [cartOpen, setCartOpen] = useState(false)
@@ -54,6 +55,11 @@ function App() {
         <Route path='/profile' element={
           <ProtectedRoute>
             <ProfilePage />
+          </ProtectedRoute>
+        } />
+        <Route path='/subscribe' element={
+          <ProtectedRoute>
+            <SubscribePage />
           </ProtectedRoute>
         } />
         <Route path='/checkout' element={
