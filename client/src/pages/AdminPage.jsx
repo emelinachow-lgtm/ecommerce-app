@@ -43,6 +43,7 @@ function AdminPage() {
   const navigate = useNavigate()
   const { user, logout } = useAuth()
   const [selectedCart, setSelectedCart] = useState(null)
+  const [toast, setToast] = useState('')
 
   useEffect(() => {
     async function fetchData() {
@@ -96,15 +97,20 @@ function AdminPage() {
     try {
       if (selectedProduct) {
         await api.put(`/products/${selectedProduct._id}`, productData)
+        setToast('Product updated successfully')
       } else {
         await api.post('/products', productData)
+        setToast('Product added successfully')
       }
       setAddEditOpen(false)
       const productsRes = await api.get('/products')
       setProducts(productsRes.data)
       setStats(prev => ({ ...prev, totalProducts: productsRes.data.length }))
+      setTimeout(() => setToast(''), 3000)
     } catch (err) {
       console.error('Failed to save product:', err)
+      setToast('Failed to save product')
+      setTimeout(() => setToast(''), 3000)
     }
   }
 
@@ -489,15 +495,15 @@ function AdminPage() {
                     />
                     <div style={{ flex: 1 }}>
                       <p style={{
-                        fontSize: '22px', fontWeight: '400', color: '#1A1A1A',
+                        fontSize: '30px', fontWeight: '400', color: '#1A1A1A',
                         textTransform: 'uppercase', fontFamily: 'Jomhuria, serif',
-                        margin: '0 0 2px', lineHeight: 1
+                        margin: '0 0 2px', lineHeight: 1, letterSpacing: '0.02em'
                       }}>{item.product?.name}</p>
                       <p style={{ fontSize: '13px', color: '#6B6B6B', margin: 0 }}>
                         {item.product?.variant} · Qty: {item.quantity}
                       </p>
                     </div>
-                    <p style={{ fontSize: '15px', fontWeight: '700', color: '#1A1A1A', margin: 0, flexShrink: 0 }}>
+                    <p style={{ fontSize: '16px', fontWeight: '700', color: '#1A1A1A', margin: 0, flexShrink: 0 }}>
                       ${(item.product?.price * item.quantity).toFixed(2)}
                     </p>
                   </div>
@@ -530,6 +536,34 @@ function AdminPage() {
         onConfirm={handleConfirmDelete}
         productName={selectedProduct?.name}
       />
+
+      {toast && (
+        <div style={{
+          position: 'fixed',
+          bottom: '32px',
+          left: 0,
+          right: 0,
+          display: 'flex',
+          justifyContent: 'center',
+          zIndex: 300,
+          pointerEvents: 'none'
+        }}>
+          <div style={{
+            background: '#C5EBDA',
+            color: '#1A1A1A',
+            padding: '14px 24px',
+            borderRadius: '999px',
+            fontSize: '15px',
+            fontWeight: '700',
+            textTransform: 'uppercase',
+            letterSpacing: '0.04em',
+            boxShadow: '0 4px 20px rgba(0,0,0,0.1)',
+            pointerEvents: 'auto'
+          }}>
+            {toast}
+          </div>
+        </div>
+      )}
 
     </div>
   )
