@@ -22,6 +22,7 @@ import { useAuth } from '../context/useAuth'
 function CartSidebar({ isOpen, onClose }) {
   const [cart, setCart] = useState({ items: [] })
   const [loading, setLoading] = useState(false)
+  const [toast, setToast] = useState('')
   const navigate = useNavigate()
   const { token } = useAuth()
 
@@ -85,7 +86,7 @@ function CartSidebar({ isOpen, onClose }) {
           </div>
           <p style={{
             fontSize: '40px', fontWeight: '400', color: '#1A1A1A',
-            textTransform: 'uppercase',fontFamily: 'Jomhuria, serif', letterSpacing: '0.02em', margin: 0
+            textTransform: 'uppercase', fontFamily: 'Jomhuria, serif', letterSpacing: '0.02em', margin: 0
           }}>Please log in to view your cart</p>
           <button
             onClick={() => { onClose(); navigate('/login') }}
@@ -100,6 +101,12 @@ function CartSidebar({ isOpen, onClose }) {
     </>
   )
 
+  // show error toast for 3 seconds
+  const showToast = (message) => {
+    setToast(message)
+    setTimeout(() => setToast(''), 3000)
+  }
+
   const handleQuantityChange = async (itemId, newQty) => {
     if (newQty < 1) return
     try {
@@ -112,6 +119,7 @@ function CartSidebar({ isOpen, onClose }) {
       }))
     } catch (err) {
       console.error('Failed to update quantity:', err)
+      showToast('Could not update quantity')
     }
   }
 
@@ -124,6 +132,7 @@ function CartSidebar({ isOpen, onClose }) {
       }))
     } catch (err) {
       console.error('Failed to remove item:', err)
+      showToast('Could not remove item')
     }
   }
 
@@ -184,7 +193,7 @@ function CartSidebar({ isOpen, onClose }) {
               </div>
               <p style={{
                 fontSize: '40px', fontWeight: '400', color: '#1A1A1A',
-                textTransform: 'uppercase',fontFamily: 'Jomhuria, serif', letterSpacing: '0.02em', margin: 0
+                textTransform: 'uppercase', fontFamily: 'Jomhuria, serif', letterSpacing: '0.02em', margin: 0
               }}>Your cart is currently empty</p>
               <button
                 onClick={() => { onClose(); navigate('/products') }}
@@ -308,6 +317,30 @@ function CartSidebar({ isOpen, onClose }) {
             </div>
           </div>
         )}
+
+        {/* error toast */}
+        {toast && (
+          <div style={{
+            position: 'fixed',
+            bottom: '32px',
+            left: '50%',
+            transform: 'translateX(-50%)',
+            background: '#C0392B',
+            color: '#FFFFFF',
+            padding: '12px 24px',
+            borderRadius: '999px',
+            fontSize: '14px',
+            fontWeight: '700',
+            textTransform: 'uppercase',
+            letterSpacing: '0.04em',
+            zIndex: 300,
+            boxShadow: '0 4px 20px rgba(0,0,0,0.2)',
+            whiteSpace: 'nowrap'
+          }}>
+            {toast}
+          </div>
+        )}
+
       </div>
     </>
   )
