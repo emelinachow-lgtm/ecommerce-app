@@ -1,42 +1,46 @@
 /*
   PRODUCTS PAGE — Shraddha
   -------------------------
-  Displays all products in a grid with live search and category filters.
-
-  DEPENDENCIES:
-  - api.js — axios instance for API calls
-  - LoadingSpinner from Khushi
-  - NoResults from Sahil
-  - React Router — navigate to product detail page
+  Displays all products in a grid with live search, category filters and sort.
 
   ENDPOINTS USED:
-  - GET /products            — fetch all products
-  - GET /products?search=    — live search
-  - POST /cart               — add to cart from product card
+  - GET /api/products            — fetch all products
+  - GET /api/products?search=    — live search by name, roaster or origin
 
-  TO DO:
-  - Replace dummy data with real API calls in Week 3
-  - Connect search to GET /products?search= endpoint
+  CONNECTED TO:
+  - client/src/components/LoadingSpinner.jsx
+  - client/src/components/NoResults.jsx
+  - client/src/pages/ProductDetailPage.jsx — clicking a product navigates here
 */
 
 import { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
 import api from '../api'
 import LoadingSpinner from '../components/LoadingSpinner'
 import NoResults from '../components/NoResults'
+import { useNavigate, useLocation } from 'react-router-dom'
 
 function ProductsPage() {
   const [products, setProducts] = useState([])
   const [searchTerm, setSearchTerm] = useState('')
   const [activeCategory, setActiveCategory] = useState('View All')
-  const [searchOpen, setSearchOpen] = useState(false)
+  const [sortBy, setSortBy] = useState('default')
+  const [sortOpen, setSortOpen] = useState(false)
+  const [filterOpen, setFilterOpen] = useState(false)
   const [loading, setLoading] = useState(true)
   const [showSpinner, setShowSpinner] = useState(false)
-  const [error, setError] = useState(null)
-  const [cartMessage, setCartMessage] = useState('')
   const navigate = useNavigate()
+  const location = useLocation()
 
-  const categories = ['View All', '250g', '500g', '1kg']
+  // sync search term with URL
+  useEffect(() => {
+    const params = new URLSearchParams(location.search)
+    const search = params.get('search')
+    if (search) {
+      setSearchTerm(search)
+    } else {
+      setSearchTerm('')
+    }
+  }, [location.search])
 
   // debounced search
   useEffect(() => {
@@ -48,7 +52,7 @@ function ProductsPage() {
         const res = await api.get(`/products${query}`)
         setProducts(res.data)
       } catch {
-        setError('Failed to load products. Please try again.')
+        // keep existing products on error
       } finally {
         setLoading(false)
         setShowSpinner(false)
@@ -61,21 +65,36 @@ function ProductsPage() {
     }
   }, [searchTerm])
 
-  const handleAddToCart = async (productId) => {
-    try {
-      // TODO Week 3: await api.post('/cart', { productId, quantity: 1 })
-      setCartMessage('Added to cart!')
-      setTimeout(() => setCartMessage(''), 2000)
-    } catch {
-      setCartMessage('Could not add to cart.')
-      setTimeout(() => setCartMessage(''), 2000)
+  // close dropdowns when clicking outside
+  useEffect(() => {
+    const handleClick = () => {
+      setSortOpen(false)
+      setFilterOpen(false)
     }
-  }
+    document.addEventListener('click', handleClick)
+    return () => document.removeEventListener('click', handleClick)
+  }, [])
 
-  // filter by category/variant
-  const displayed = activeCategory === 'View All'
+  // filter then sort
+  const filtered = activeCategory === 'View All'
     ? products
     : products.filter(p => p.variant === activeCategory)
+
+  const displayed = [...filtered].sort((a, b) => {
+    if (sortBy === 'price-asc') return a.price - b.price
+    if (sortBy === 'price-desc') return b.price - a.price
+    if (sortBy === 'name-asc') return a.name.localeCompare(b.name)
+    if (sortBy === 'name-desc') return b.name.localeCompare(a.name)
+    return 0
+  })
+
+  const sortLabels = {
+    'default': '',
+    'price-asc': '$ ↑',
+    'price-desc': '$ ↓',
+    'name-asc': 'A–Z',
+    'name-desc': 'Z–A'
+  }
 
   return (
     <div style={{
@@ -84,126 +103,108 @@ function ProductsPage() {
       padding: '28px 32px'
     }}>
 
-      {/* toast message */}
-      {cartMessage && (
-        <div style={{
-          position: 'fixed',
-          top: '20px',
-          right: '20px',
-          background: '#C5EBDA',
-          color: '#1A1A1A',
-          padding: '12px 20px',
-          borderRadius: '999px',
-          fontSize: '15px',
-          fontWeight: '700',
-          zIndex: 1000,
-          textTransform: 'uppercase',
-          letterSpacing: '0.04em'
-        }}>
-          {cartMessage}
-        </div>
-      )}
-
-      {/* search bar — appears when search icon clicked */}
-      {searchOpen && (
-        <div style={{ marginBottom: '20px', maxWidth: '600px' }}>
-          <input
-            type="text"
-            placeholder="Search for a coffee..."
-            value={searchTerm}
-            onChange={e => setSearchTerm(e.target.value)}
-            autoFocus
-            style={{
-              width: '100%',
-              padding: '14px 20px',
-              fontSize: '15px',
-              color: '#1A1A1A',
-              border: '1.5px solid #E8E8E4',
-              borderRadius: '8px',
-              background: '#FFFFFF',
-              outline: 'none',
-              boxSizing: 'border-box',
-              fontFamily: 'inherit'
-            }}
-          />
-        </div>
-      )}
-
-      {/* category filter buttons */}
+      {/* filter + sort row */}
       <div style={{
         display: 'flex',
-        gap: '10px',
-        flexWrap: 'wrap',
-        marginBottom: '16px'
-      }}>
-        {categories.map(cat => (
-          <button
-            key={cat}
-            onClick={() => setActiveCategory(cat)}
-            style={{
-              padding: '10px 20px',
-              fontSize: '14px',
-              fontWeight: '700',
-              textTransform: 'uppercase',
-              letterSpacing: '0.04em',
-              border: '1.5px solid #1A1A1A',
-              borderRadius: '999px',
-              background: activeCategory === cat ? '#C5EBDA' : '#FFFFFF',
-              color: '#1A1A1A',
-              cursor: 'pointer',
-              fontFamily: 'inherit'
-            }}>
-            {cat}
-          </button>
-        ))}
-      </div>
-
-      {/* sort + filter row */}
-      <div style={{
-        display: 'flex',
-        justifyContent: 'space-between',
+        justifyContent: 'flex-end',
         alignItems: 'center',
-        marginBottom: '28px'
+        gap: '12px',
+        marginBottom: '28px',
+        position: 'relative'
       }}>
-        <button
-          onClick={() => setSearchOpen(!searchOpen)}
-          style={{
-            background: 'none',
-            border: 'none',
-            fontSize: '14px',
-            fontWeight: '700',
-            color: '#1A1A1A',
-            textTransform: 'uppercase',
-            letterSpacing: '0.06em',
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '6px',
-            fontFamily: 'inherit'
-          }}>
-          SORT BY +
-        </button>
-        <button style={{
-          background: 'none',
-          border: 'none',
-          fontSize: '14px',
-          fontWeight: '700',
-          color: '#1A1A1A',
-          textTransform: 'uppercase',
-          letterSpacing: '0.06em',
-          cursor: 'pointer',
-          display: 'flex',
-          alignItems: 'center',
-          gap: '6px',
-          fontFamily: 'inherit'
-        }}>
-          FILTER
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1A1A1A" strokeWidth="2">
-            <line x1="4" y1="6" x2="20" y2="6"/>
-            <line x1="8" y1="12" x2="16" y2="12"/>
-            <line x1="11" y1="18" x2="13" y2="18"/>
-          </svg>
-        </button>
+
+        {/* filter button */}
+        <div style={{ position: 'relative' }} onClick={e => e.stopPropagation()}>
+          <button
+            onClick={() => { setFilterOpen(!filterOpen); setSortOpen(false) }}
+            style={{
+              fontSize: '14px', fontWeight: '700', color: '#1A1A1A',
+              textTransform: 'uppercase', letterSpacing: '0.06em',
+              cursor: 'pointer', display: 'flex', alignItems: 'center',
+              gap: '6px', fontFamily: 'inherit', padding: '10px 20px',
+              borderRadius: '999px', border: '1.5px solid #1A1A1A',
+              background: activeCategory !== 'View All' ? '#C5EBDA' : 'transparent'
+            }}>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1A1A1A" strokeWidth="2">
+              <line x1="4" y1="6" x2="20" y2="6"/>
+              <line x1="8" y1="12" x2="16" y2="12"/>
+              <line x1="11" y1="18" x2="13" y2="18"/>
+            </svg>
+            Filter {activeCategory !== 'View All' ? `· ${activeCategory}` : ''}
+          </button>
+
+          {filterOpen && (
+            <div style={{
+              position: 'absolute', top: '48px', left: 0,
+              background: '#FFFFFF', border: '1px solid #E8E8E4',
+              borderRadius: '14px', padding: '8px', zIndex: 50,
+              boxShadow: '0 8px 24px rgba(0,0,0,0.1)', minWidth: '160px'
+            }}>
+              {['View All', '250g', '500g', '1kg'].map(cat => (
+                <button
+                  key={cat}
+                  onClick={() => { setActiveCategory(cat); setFilterOpen(false) }}
+                  style={{
+                    display: 'block', width: '100%', textAlign: 'left',
+                    padding: '10px 16px', fontSize: '14px', fontWeight: '700',
+                    color: '#1A1A1A', textTransform: 'uppercase', letterSpacing: '0.04em',
+                    background: activeCategory === cat ? '#C5EBDA' : 'transparent',
+                    border: 'none', borderRadius: '8px', cursor: 'pointer',
+                    fontFamily: 'inherit'
+                  }}>
+                  {cat}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* sort button */}
+        <div style={{ position: 'relative' }} onClick={e => e.stopPropagation()}>
+          <button
+            onClick={() => { setSortOpen(!sortOpen); setFilterOpen(false) }}
+            style={{
+              fontSize: '14px', fontWeight: '700', color: '#1A1A1A',
+              textTransform: 'uppercase', letterSpacing: '0.06em',
+              cursor: 'pointer', display: 'flex', alignItems: 'center',
+              gap: '6px', fontFamily: 'inherit', padding: '10px 20px',
+              borderRadius: '999px', border: '1.5px solid #1A1A1A',
+              background: sortBy !== 'default' ? '#C5EBDA' : 'transparent'
+            }}>
+            Sort By {sortBy !== 'default' ? `· ${sortLabels[sortBy]}` : '+'}
+          </button>
+
+          {sortOpen && (
+            <div style={{
+              position: 'absolute', top: '48px', right: 0,
+              background: '#FFFFFF', border: '1px solid #E8E8E4',
+              borderRadius: '14px', padding: '8px', zIndex: 50,
+              boxShadow: '0 8px 24px rgba(0,0,0,0.1)', minWidth: '220px'
+            }}>
+              {[
+                { label: 'Default', value: 'default' },
+                { label: 'Price: Low to High', value: 'price-asc' },
+                { label: 'Price: High to Low', value: 'price-desc' },
+                { label: 'Name: A to Z', value: 'name-asc' },
+                { label: 'Name: Z to A', value: 'name-desc' },
+              ].map(option => (
+                <button
+                  key={option.value}
+                  onClick={() => { setSortBy(option.value); setSortOpen(false) }}
+                  style={{
+                    display: 'block', width: '100%', textAlign: 'left',
+                    padding: '10px 16px', fontSize: '14px', fontWeight: '700',
+                    color: '#1A1A1A', textTransform: 'uppercase', letterSpacing: '0.04em',
+                    background: sortBy === option.value ? '#C5EBDA' : 'transparent',
+                    border: 'none', borderRadius: '8px', cursor: 'pointer',
+                    fontFamily: 'inherit'
+                  }}>
+                  {option.label}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
 
       {/* loading */}
@@ -250,7 +251,7 @@ function ProductsPage() {
                   style={{
                     width: '100%',
                     height: '100%',
-                    objectFit: 'cover'
+                    objectFit: 'contain',
                   }}
                 />
               </div>
@@ -260,16 +261,12 @@ function ProductsPage() {
                 onClick={() => navigate(`/products/${product._id}`)}
                 style={{ padding: '12px 14px 14px' }}>
                 <p style={{
-                  fontSize: '15px',
-                  fontWeight: '700',
-                  color: '#1A1A1A',
-                  margin: '0 0 2px',
-                  textTransform: 'uppercase'
+                  fontSize: '32px', fontWeight: '400', color: '#1A1A1A',
+                  textTransform: 'uppercase', fontFamily: 'Jomhuria, serif',
+                  margin: '0 0 4px', lineHeight: 1, letterSpacing: '0.02em'
                 }}>{product.name}</p>
                 <p style={{
-                  fontSize: '14px',
-                  color: '#6B6B6B',
-                  margin: 0
+                  fontSize: '14px', color: '#6B6B6B', margin: 0
                 }}>From $ {product.price.toFixed(2)}</p>
               </div>
             </div>

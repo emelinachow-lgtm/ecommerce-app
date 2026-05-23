@@ -1,18 +1,16 @@
 /*
   PRODUCT DETAIL PAGE — Shraddha
   --------------------------------
-  Shows full details of a single product.
-
-  DEPENDENCIES:
-  - api.js — axios instance for API calls
-  - React Router — useParams to get product id, useNavigate to go back
+  Shows full details of a single product including
+  tasting notes, coffee profile, origin and add to cart.
 
   ENDPOINTS USED:
-  - GET /products/:id — fetch single product on mount
+  - GET /api/products/:id — fetch single product on mount
+  - POST /api/cart        — add product to cart
 
-  TO DO:
-  - Replace dummy data with real API call in Week 3
-  - Connect Add to Cart button to POST /cart
+  CONNECTED TO:
+  - client/src/pages/ProductsPage.jsx — navigates here on product click
+  - client/src/routes/cartRoutes.js — cart POST on add to cart
 */
 
 import { useState, useEffect } from 'react'
@@ -76,8 +74,9 @@ function ProductDetailPage() {
       {cartMessage && (
         <div style={{
           position: 'fixed',
-          top: '20px',
-          right: '20px',
+          top: '90px',
+          left: '50%',
+          transform: 'translateX(-50%)',
           background: '#C5EBDA',
           color: '#1A1A1A',
           padding: '12px 20px',
@@ -109,8 +108,9 @@ function ProductDetailPage() {
             alt={product.name}
             style={{
               width: '100%',
+              height: '600px',
               borderRadius: '12px',
-              objectFit: 'cover'
+              objectFit: 'contain'
             }}
           />
         </div>
@@ -212,7 +212,7 @@ function ProductDetailPage() {
             {/* price */}
             <div style={{ textAlign: 'left' }}>
               <p style={{
-                fontSize: '32px',
+                fontSize: '24px',
                 fontWeight: '900',
                 color: '#1A1A1A',
                 margin: '0 0 4px'

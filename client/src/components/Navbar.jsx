@@ -1,17 +1,17 @@
 /*
   NAVBAR — Shraddha
   ------------------
-  Main navigation bar shown on all pages except admin dashboard.
+  Main navigation bar shown on all pages except admin dashboard and welcome page.
 
   PROPS:
   - onCartOpen (function) — opens the cart sidebar, passed from App.jsx
 
-  STATES:
-  - Default — no active link
-  - Active link — wavy underline under current page link
-  - Search expanded — search input appears below navbar
-  - Logged in — profile and cart icons shown
-  - Admin — admin badge shown between profile and cart
+  FEATURES:
+  - Active link wavy underline on current page
+  - Search expands below navbar when icon clicked (disabled when not logged in)
+  - Profile icon navigates to /profile when logged in
+  - Admin badge navigates to /admin for admin users
+  - Cart icon opens CartSidebar
 
   CONNECTED TO:
   - App.jsx — receives onCartOpen prop
@@ -23,7 +23,7 @@ import { useState } from 'react'
 import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { useAuth } from '../context/useAuth'
 
-// wavy underline SVG component
+// wavy underline SVG shown under active nav link
 function WavyUnderline() {
   return (
     <svg
@@ -46,17 +46,12 @@ function WavyUnderline() {
 function Navbar({ onCartOpen }) {
   const [searchOpen, setSearchOpen] = useState(false)
   const [searchTerm, setSearchTerm] = useState('')
-  const { user, token, logout } = useAuth()
+  const { user, token } = useAuth()
   const navigate = useNavigate()
   const location = useLocation()
 
   const isActive = (path) => location.pathname === path ||
     (path === '/products' && location.pathname.startsWith('/products'))
-
-  const handleLogout = () => {
-    logout()
-    navigate('/login')
-  }
 
   const handleSearch = (e) => {
     if (e.key === 'Enter' && searchTerm.trim()) {
@@ -96,21 +91,13 @@ function Navbar({ onCartOpen }) {
         </Link>
 
         {/* nav links */}
-        <div style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: '48px'
-        }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '48px' }}>
           <div style={{ textAlign: 'center' }}>
             <Link
               to="/products"
               style={{
-                fontSize: '13px',
-                fontWeight: '700',
-                color: '#1A1A1A',
-                textDecoration: 'none',
-                textTransform: 'uppercase',
-                letterSpacing: '0.08em'
+                fontSize: '13px', fontWeight: '700', color: '#1A1A1A',
+                textDecoration: 'none', textTransform: 'uppercase', letterSpacing: '0.08em'
               }}>
               Shop
             </Link>
@@ -121,12 +108,8 @@ function Navbar({ onCartOpen }) {
             <Link
               to="/our-story"
               style={{
-                fontSize: '13px',
-                fontWeight: '700',
-                color: '#1A1A1A',
-                textDecoration: 'none',
-                textTransform: 'uppercase',
-                letterSpacing: '0.08em'
+                fontSize: '13px', fontWeight: '700', color: '#1A1A1A',
+                textDecoration: 'none', textTransform: 'uppercase', letterSpacing: '0.08em'
               }}>
               Our Story
             </Link>
@@ -137,12 +120,8 @@ function Navbar({ onCartOpen }) {
             <Link
               to="/subscribe"
               style={{
-                fontSize: '13px',
-                fontWeight: '700',
-                color: '#1A1A1A',
-                textDecoration: 'none',
-                textTransform: 'uppercase',
-                letterSpacing: '0.08em'
+                fontSize: '13px', fontWeight: '700', color: '#1A1A1A',
+                textDecoration: 'none', textTransform: 'uppercase', letterSpacing: '0.08em'
               }}>
               Subscribe
             </Link>
@@ -151,13 +130,9 @@ function Navbar({ onCartOpen }) {
         </div>
 
         {/* right icons */}
-        <div style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: '20px'
-        }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
 
-          {/* search icon */}
+          {/* search icon — disabled when not logged in */}
           <button
             onClick={() => token && setSearchOpen(!searchOpen)}
             style={{
@@ -195,22 +170,15 @@ function Navbar({ onCartOpen }) {
             </button>
           )}
 
-          {/* admin badge */}
+          {/* admin badge — only shown for admin users */}
           {user?.role === 'admin' && (
             <button
               onClick={() => navigate('/admin')}
               style={{
-                background: '#1A1A1A',
-                color: '#C5EBDA',
-                border: 'none',
-                padding: '4px 10px',
-                borderRadius: '4px',
-                fontSize: '10px',
-                fontWeight: '700',
-                textTransform: 'uppercase',
-                letterSpacing: '0.06em',
-                cursor: 'pointer',
-                fontFamily: 'inherit'
+                background: '#1A1A1A', color: '#C5EBDA', border: 'none',
+                padding: '4px 10px', borderRadius: '4px', fontSize: '10px',
+                fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.06em',
+                cursor: 'pointer', fontFamily: 'inherit'
               }}>
               Admin
             </button>
@@ -246,24 +214,15 @@ function Navbar({ onCartOpen }) {
             onKeyDown={handleSearch}
             autoFocus
             style={{
-              width: '100%',
-              padding: '12px 20px',
-              fontSize: '15px',
-              color: '#1A1A1A',
-              background: '#FFFFFF',
-              border: 'none',
-              borderRadius: '8px',
-              outline: 'none',
-              fontFamily: 'inherit',
+              width: '100%', padding: '12px 20px', fontSize: '15px',
+              color: '#1A1A1A', background: '#FFFFFF', border: 'none',
+              borderRadius: '8px', outline: 'none', fontFamily: 'inherit',
               boxSizing: 'border-box'
             }}
           />
-          <p style={{
-            fontSize: '12px',
-            color: '#1A1A1A',
-            margin: '6px 0 0',
-            opacity: 0.6
-          }}>Press Enter to search</p>
+          <p style={{ fontSize: '12px', color: '#1A1A1A', margin: '6px 0 0', opacity: 0.6 }}>
+            Press Enter to search
+          </p>
         </div>
       )}
     </div>
@@ -271,13 +230,8 @@ function Navbar({ onCartOpen }) {
 }
 
 const iconBtnStyle = {
-  background: 'none',
-  border: 'none',
-  cursor: 'pointer',
-  padding: '4px',
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center'
+  background: 'none', border: 'none', cursor: 'pointer',
+  padding: '4px', display: 'flex', alignItems: 'center', justifyContent: 'center'
 }
 
 export default Navbar
