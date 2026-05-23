@@ -94,19 +94,19 @@ function CheckoutPage() {
                   <img
                     src={item.product?.image}
                     alt={item.product?.name}
-                    style={{ width: '56px', height: '56px', objectFit: 'cover', borderRadius: '8px', flexShrink: 0 }}
+                    style={{ width: '80px', height: '80px', objectFit: 'cover', borderRadius: '8px', flexShrink: 0 }}
                   />
                   <div style={{ flex: 1 }}>
                     <p style={{
-                      fontSize: '22px', fontWeight: '400', color: '#1A1A1A',
+                      fontSize: '32px', fontWeight: '400', color: '#1A1A1A',
                       textTransform: 'uppercase', fontFamily: 'Jomhuria, serif',
-                      margin: '0 0 2px', lineHeight: 1
+                      margin: '0 0 4px', lineHeight: 1, letterSpacing: '0.02em'
                     }}>{item.product?.name}</p>
-                    <p style={{ fontSize: '13px', color: '#6B6B6B', margin: 0 }}>
+                    <p style={{ fontSize: '15px', color: '#6B6B6B', margin: 0 }}>
                       {item.product?.variant} · Qty: {item.quantity}
                     </p>
                   </div>
-                  <p style={{ fontSize: '15px', fontWeight: '700', color: '#1A1A1A', margin: 0 }}>
+                  <p style={{ fontSize: '18px', fontWeight: '700', color: '#1A1A1A', margin: 0 }}>
                     ${(item.product?.price * item.quantity).toFixed(2)}
                   </p>
                 </div>
