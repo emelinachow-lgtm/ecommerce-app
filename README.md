@@ -136,7 +136,7 @@ Client runs on `http://localhost:5173`
 
 | Role | Email | Password |
 |------|-------|----------|
-| Customer | test@espresso.com | password123 |
+| Customer | user@espresso.com | userpassword123 |
 | Admin | admin@espresso.com | password123 |
 
 > To create an admin account: register a new user then open MongoDB Compass, find the user in the `users` collection and change `role` from `"user"` to `"admin"`.
