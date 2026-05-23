@@ -5,6 +5,7 @@
 
   ENDPOINTS:
   - GET    /api/users          — admin only, list all users
+  - GET    /api/users/:id      — get own profile
   - PUT    /api/users/:id      — update own profile
   - DELETE /api/users/:id      — delete own account
 
@@ -29,7 +30,6 @@ const adminMiddleware = require('../middleware/adminMiddleware')
 // GET /api/users — admin only, list all users
 router.get('/', authMiddleware, adminMiddleware, async (req, res) => {
   try {
-    // exclude password field from response
     const users = await User.find().select('-password')
     res.json(users)
   } catch (err) {
@@ -51,19 +51,12 @@ router.get('/:id', authMiddleware, async (req, res) => {
 // PUT /api/users/:id — update own profile
 router.put('/:id', authMiddleware, async (req, res) => {
   try {
-    console.log('PUT /users/:id hit')
-    console.log('req.body:', req.body)
-    console.log('req.params.id:', req.params.id)
-
     const { name, email, password } = req.body
 
     const updates = {}
     if (name) updates.name = name
     if (email) updates.email = email
-
-    if (password) {
-      updates.password = await bcrypt.hash(password, 10)
-    }
+    if (password) updates.password = await bcrypt.hash(password, 10)
 
     const user = await User.findByIdAndUpdate(
       req.params.id,
@@ -71,13 +64,10 @@ router.put('/:id', authMiddleware, async (req, res) => {
       { new: true }
     ).select('-password')
 
-    console.log('updated user:', user)
-
     if (!user) return res.status(404).json({ message: 'User not found' })
 
     res.json(user)
   } catch (err) {
-    console.error('PUT /users error:', err)
     res.status(500).json({ message: 'Server error' })
   }
 })
