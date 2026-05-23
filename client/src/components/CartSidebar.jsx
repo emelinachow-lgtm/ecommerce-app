@@ -26,7 +26,7 @@ function CartSidebar({ isOpen, onClose }) {
   const { token } = useAuth()
 
   const subtotal = cart.items.reduce(
-    (sum, item) => sum + item.product.price * item.quantity, 0
+    (sum, item) => sum + (item.product?.price || 0) * item.quantity, 0
   )
 
   useEffect(() => {
@@ -199,18 +199,15 @@ function CartSidebar({ isOpen, onClose }) {
             </div>
           ) : (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
-              {cart.items.map(item => (
+              {cart.items.filter(item => item.product).map(item => (
                 <div key={item._id} style={{
                   display: 'flex', alignItems: 'flex-start', gap: '14px',
                   background: '#F5F5CC', borderRadius: '14px', padding: '16px'
                 }}>
                   <img
-                    src={item.product.image}
-                    alt={item.product.name}
-                    style={{
-                      width: '80px', height: '80px', objectFit: 'cover',
-                      borderRadius: '8px', flexShrink: 0
-                    }}
+                    src={item.product?.image}
+                    alt={item.product?.name}
+                    style={{ width: '80px', height: '80px', objectFit: 'cover', borderRadius: '8px', flexShrink: 0 }}
                   />
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div style={{
