@@ -3,11 +3,6 @@
   --------------------
   Displays the logged in user's full cart.
 
-  DEPENDENCIES:
-  - authMiddleware from Sahil — JWT verified automatically via api.js
-  - Cart routes from server/routes/cartRoutes.js
-  - api.js handles JWT token automatically on every request
-
   ENDPOINTS USED:
   - GET    /api/cart              — fetch cart on page load
   - PUT    /api/cart/:itemId      — update item quantity
@@ -22,8 +17,6 @@ function CartPage() {
   const [cart, setCart] = useState({ items: [] })
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
-  const [notesOpen, setNotesOpen] = useState(false)
-  const [notes, setNotes] = useState('')
   const navigate = useNavigate()
 
   // fetch cart on page load
@@ -338,41 +331,6 @@ function CartPage() {
 
         <div style={{ textAlign: 'right', minWidth: '300px' }}>
 
-          {/* add notes */}
-          <div
-            onClick={() => setNotesOpen(!notesOpen)}
-            style={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              cursor: 'pointer',
-              marginBottom: '12px'
-            }}>
-            <span style={{ fontSize: '18px', color: '#1A1A1A' }}>Add Notes</span>
-            <span style={{ fontSize: '24px', color: '#1A1A1A', fontWeight: '300' }}>{notesOpen ? '−' : '+'}</span>
-          </div>
-          {notesOpen && (
-            <textarea
-              value={notes}
-              onChange={e => setNotes(e.target.value)}
-              placeholder="Add a note to your order..."
-              style={{
-                width: '100%',
-                height: '80px',
-                border: '0.5px solid #E8E8E4',
-                borderRadius: '8px',
-                padding: '10px',
-                fontSize: '15px',
-                fontFamily: 'inherit',
-                color: '#1A1A1A',
-                background: '#FFFFFF',
-                resize: 'none',
-                marginBottom: '12px',
-                boxSizing: 'border-box'
-              }}
-            />
-          )}
-
           {/* item count + total */}
           <div style={{
             display: 'flex',
@@ -388,19 +346,21 @@ function CartPage() {
             </span>
           </div>
 
-          <button style={{
-            background: '#C5EBDA',
-            color: '#1A1A1A',
-            border: 'none',
-            padding: '18px 32px',
-            borderRadius: '999px',
-            fontSize: '18px',
-            fontWeight: '900',
-            textTransform: 'uppercase',
-            letterSpacing: '0.06em',
-            cursor: 'pointer',
-            width: '100%'
-          }}>Check Out</button>
+          <button
+            onClick={() => navigate('/checkout')}
+            style={{
+              background: '#C5EBDA',
+              color: '#1A1A1A',
+              border: 'none',
+              padding: '18px 32px',
+              borderRadius: '999px',
+              fontSize: '18px',
+              fontWeight: '900',
+              textTransform: 'uppercase',
+              letterSpacing: '0.06em',
+              cursor: 'pointer',
+              width: '100%'
+            }}>Check Out</button>
         </div>
       </div>
     </div>

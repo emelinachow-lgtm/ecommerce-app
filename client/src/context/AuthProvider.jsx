@@ -1,3 +1,21 @@
+/*
+  AUTH PROVIDER — Emelina
+  ------------------------
+  Wraps the app with authentication context.
+  Persists user and token in localStorage so state
+  survives page reloads.
+
+  PROVIDES:
+  - user — logged in user object { id, name, email, role }
+  - token — JWT string
+  - login(userData, tokenData) — saves user and token
+  - logout() — clears user and token
+
+  USED BY:
+  - client/src/main.jsx — wraps entire app
+  - client/src/context/useAuth.js — hook to access context
+*/
+
 import { useState } from 'react'
 import { AuthContext } from './AuthContext'
 

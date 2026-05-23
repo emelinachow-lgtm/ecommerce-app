@@ -11,7 +11,7 @@
   - existingProduct (object|null) — null = add mode, object = edit mode
 
   USED BY:
-  - client/src/pages/AdminPage.jsx — Emelina imports this
+  - client/src/pages/AdminPage.jsx
 
   NOTE:
   - This modal does NOT make API calls itself
@@ -113,8 +113,8 @@ function AddEditProductModal({ isOpen, onClose, onSave, existingProduct }) {
 
         {/* heading */}
         <p style={{
-          fontSize: '42px',
-          fontWeight: '900',
+          fontSize: '50px',
+          fontWeight: '400',
           color: '#1A1A1A',
           textTransform: 'uppercase',
           letterSpacing: '0.02em',

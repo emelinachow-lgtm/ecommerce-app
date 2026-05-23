@@ -10,7 +10,7 @@
   - productName (string) — shown in the description text
 
   USED BY:
-  - client/src/pages/AdminPage.jsx — Emelina imports this
+  - client/src/pages/AdminPage.jsx
 */
 
 function DeleteProductModal({ isOpen, onClose, onConfirm, productName }) {
@@ -76,16 +76,16 @@ function DeleteProductModal({ isOpen, onClose, onConfirm, productName }) {
 
         {/* heading */}
         <p style={{
-          fontSize: '36px',
-          fontWeight: '900',
+          fontSize: '50px',
+          fontWeight: '400',
           color: '#1A1A1A',
           textTransform: 'uppercase',
           letterSpacing: '0.02em',
           margin: '0 0 16px',
-          lineHeight: 1.1,
+          lineHeight: 1,
           fontFamily: 'Jomhuria, serif'
         }}>
-          Delete Product<br />Are you sure?
+          Delete Product <br /> Are you sure?
         </p>
 
         {/* description */}

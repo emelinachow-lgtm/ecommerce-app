@@ -81,15 +81,18 @@ function Navbar({ onCartOpen }) {
 
         {/* logo */}
         <Link
-          to="/"
+          to="/products"
           style={{
-            fontSize: '22px',
-            fontWeight: '900',
+            fontSize: '48px',
+            fontWeight: '400',
             color: '#1A1A1A',
             textDecoration: 'none',
-            fontFamily: 'inherit'
+            fontFamily: 'Jomhuria, serif',
+            textTransform: 'uppercase',
+            lineHeight: 0.5,
+            letterSpacing: '0.02em'
           }}>
-          espresso yourself
+          espresso<br />yourself
         </Link>
 
         {/* nav links */}
@@ -156,9 +159,13 @@ function Navbar({ onCartOpen }) {
 
           {/* search icon */}
           <button
-            onClick={() => setSearchOpen(!searchOpen)}
-            style={iconBtnStyle}
-            title="Search">
+            onClick={() => token && setSearchOpen(!searchOpen)}
+            style={{
+              ...iconBtnStyle,
+              opacity: token ? 1 : 0.4,
+              cursor: token ? 'pointer' : 'not-allowed'
+            }}
+            title={token ? 'Search' : 'Log in to search'}>
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1A1A1A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <circle cx="11" cy="11" r="8"/>
               <line x1="21" y1="21" x2="16.65" y2="16.65"/>

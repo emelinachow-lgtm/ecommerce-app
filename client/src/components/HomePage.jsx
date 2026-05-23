@@ -1,4 +1,23 @@
+/*
+  HOME PAGE / LANDING ANIMATION — Khushi
+  ----------------------------------------
+  Scroll-driven landing animation shown to customers after login.
+  Auto-scrolls through 4 sections over 10 seconds then redirects to /products.
+  Skip button allows users to bypass the animation.
+
+  SECTIONS:
+  1. Coffee plant scene with animated cherry elements
+  2. Funnel scene — cherries spiral into a coffee filter
+  3. Parallax scene with coffee imagery
+  4. Final scene with lower plant elements
+
+  CONNECTED TO:
+  - App.jsx — rendered at /welcome route (protected)
+  - LoginPage.jsx — customers redirected here after login
+*/
+
 import { useEffect, useRef } from 'react'
+import { useNavigate } from 'react-router-dom'
 
 import screen1 from '../assets/screen1.svg'
 import screen2 from '../assets/screen2.svg'
@@ -85,8 +104,12 @@ const pngStyle = {
 function HomePage() {
   const elementRefs = useRef({})
   const funnelAnchors = useRef({})
+  const navigate = useNavigate()
+  const animFrameRef = useRef(null)
 
   useEffect(() => {
+    window.scrollTo(0, 0)
+
     const measureFunnelAnchors = () => {
       FUNNEL_ITEMS.forEach(({ id }) => {
         const node = elementRefs.current[id]
@@ -111,9 +134,7 @@ function HomePage() {
       const s2Progress = Math.min(Math.max((scrollY - vh) / vh, 0), 1)
 
       const hillsLayer = elementRefs.current.hillsLayer
-      if (hillsLayer) {
-        hillsLayer.style.opacity = String(1 - s1Progress)
-      }
+      if (hillsLayer) hillsLayer.style.opacity = String(1 - s1Progress)
 
       const screen1Bg = elementRefs.current.screen1Bg
       if (screen1Bg) {
@@ -153,14 +174,12 @@ function HomePage() {
         const node = elementRefs.current[id]
         const anchor = funnelAnchors.current[id]
         if (!node || !anchor) return
-
         const baseY = anchor.y - scrollY + pinY
         const pullX = (targetX - anchor.x) * s2Progress
         const pullY = (targetY - baseY) * s2Progress
         const rotate = s2Progress * rotateDir * (160 + swirl)
         const scale = 1 - s2Progress * 0.5
         const fade = 1 - s2Progress * 0.9
-
         node.style.transformOrigin = 'center center'
         node.style.transform = `translateY(${pinY}px) translate(${pullX}px, ${pullY}px) rotate(${rotate}deg) scale(${scale})`
         node.style.opacity = String(fade)
@@ -194,31 +213,91 @@ function HomePage() {
     window.addEventListener('resize', onResize, { passive: true })
     updateScroll()
 
+    const scrollTimer = setTimeout(() => {
+      const totalScroll = document.documentElement.scrollHeight - window.innerHeight
+
+      if (totalScroll <= 0) {
+        navigate('/products')
+        return
+      }
+
+      const duration = 10000
+      const startTime = Date.now()
+
+      const autoScroll = () => {
+        const elapsed = Date.now() - startTime
+        const progress = Math.min(elapsed / duration, 1)
+        const eased = progress < 0.5
+          ? 2 * progress * progress
+          : -1 + (4 - 2 * progress) * progress
+
+        const scrollPos = totalScroll * eased
+        document.documentElement.scrollTop = scrollPos
+        document.body.scrollTop = scrollPos
+
+        if (progress < 1) {
+          animFrameRef.current = requestAnimationFrame(autoScroll)
+        } else {
+          navigate('/products')
+        }
+      }
+
+      animFrameRef.current = requestAnimationFrame(autoScroll)
+    }, 1500)
+
     return () => {
       window.removeEventListener('scroll', onScroll)
       window.removeEventListener('resize', onResize)
+      if (animFrameRef.current) cancelAnimationFrame(animFrameRef.current)
+      clearTimeout(scrollTimer)
     }
-  }, [])
+  }, [navigate])
 
   const setRef = (id) => (node) => {
     elementRefs.current[id] = node
   }
 
+  const handleSkip = () => {
+    if (animFrameRef.current) cancelAnimationFrame(animFrameRef.current)
+    navigate('/products')
+  }
+
   return (
     <div style={pageStyle}>
-      {/* Section 1 */}
-      <section
+
+      {/* skip button */}
+      <button
+        onClick={handleSkip}
         style={{
-          position: 'relative',
-          overflow: 'visible',
-          width: '100%',
-          height: '100vh',
-          margin: 0,
-          padding: 0,
-          backgroundColor: '#F5F5CC',
-          zIndex: 2,
-        }}
-      >
+          position: 'fixed',
+          top: '24px',
+          right: '24px',
+          zIndex: 999,
+          background: 'rgba(255,255,255,0.8)',
+          border: '1.5px solid #1A1A1A',
+          padding: '8px 20px',
+          borderRadius: '999px',
+          fontSize: '13px',
+          fontWeight: '700',
+          textTransform: 'uppercase',
+          letterSpacing: '0.06em',
+          cursor: 'pointer',
+          fontFamily: 'inherit',
+        }}>
+        Skip →
+      </button>
+
+      {/* Section 1 */}
+      <section style={{
+        position: 'relative',
+        overflow: 'visible',
+        width: '100%',
+        height: '100vh',
+        margin: 0,
+        padding: 0,
+        backgroundColor: '#F5F5CC',
+        zIndex: 2,
+      }}>
         <div
           ref={setRef('screen1Bg')}
           aria-hidden="true"
@@ -252,7 +331,6 @@ function HomePage() {
             maskImage: 'linear-gradient(to bottom, transparent 0%, black 22%)',
           }}
         />
-
         <img ref={setRef('upperEl')} src={upperEl} alt="" style={{ ...floatStyle, top: 0, left: -40, width: 280, zIndex: 10 }} />
         <img ref={setRef('upperElB')} src={upperElB} alt="" style={{ ...floatStyle, top: -60, right: -120, width: 520, zIndex: 11 }} />
         <img ref={setRef('s1-el1')} src={el1} alt="" style={{ ...floatStyle, ...pngStyle, top: '36%', left: -25, width: 260, zIndex: 12 }} />
@@ -272,12 +350,7 @@ function HomePage() {
 
       {/* Section 3 */}
       <section style={{ ...sectionStyle(screen3), zIndex: 2 }}>
-        <img
-          ref={setRef('group10')}
-          src={group10}
-          alt=""
-          style={{ ...floatStyle, top: 50, left: '50%', width: 600, transform: 'translateX(-50%)' }}
-        />
+        <img ref={setRef('group10')} src={group10} alt="" style={{ ...floatStyle, top: 50, left: '50%', width: 600, transform: 'translateX(-50%)' }} />
         <img ref={setRef('el5')} src={el5} alt="" style={{ ...floatStyle, ...pngStyle, top: '12%', left: '8%', width: 180 }} />
         <img ref={setRef('el6')} src={el6} alt="" style={{ ...floatStyle, ...pngStyle, top: '18%', right: '10%', width: 180 }} />
         <img ref={setRef('el7')} src={el7} alt="" style={{ ...floatStyle, ...pngStyle, bottom: '18%', left: '12%', width: 180 }} />
@@ -291,6 +364,7 @@ function HomePage() {
         <img ref={setRef('el9')} src={el9} alt="" style={{ ...floatStyle, ...pngStyle, bottom: 24, left: 24, width: 200 }} />
         <img ref={setRef('el10')} src={el10} alt="" style={{ ...floatStyle, ...pngStyle, bottom: 24, right: 24, width: 200 }} />
       </section>
+
     </div>
   )
 }

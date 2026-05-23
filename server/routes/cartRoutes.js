@@ -3,22 +3,17 @@
   ----------------------
   Handles all cart-related API endpoints.
 
-  DEPENDENCIES:
-  - Requires authMiddleware from Sahil (server/middleware/authMiddleware.js)
-  - Requires adminMiddleware from Sahil (server/middleware/adminMiddleware.js)
-  - Requires Cart model from server/models/Cart.js
-  - All routes except admin are protected — user must be logged in
-
   ENDPOINTS:
   - GET    /api/cart              — get logged in user's cart
   - POST   /api/cart              — add item to cart
   - PUT    /api/cart/:itemId      — update item quantity
   - DELETE /api/cart/:itemId      — remove item from cart
-  - GET    /api/admin/carts       — get all users' carts (admin only)
+  - GET    /api/cart/admin/carts  — get all users' carts (admin only)
 
-  TO DO:
-  - Test all routes in Thunder Client once Sahil pushes auth middleware
-  - Connect frontend CartPage and CartSidebar to these routes in Week 3
+  DEPENDENCIES:
+  - authMiddleware — verifies JWT, user must be logged in
+  - adminMiddleware — checks role === "admin"
+  - Cart model from server/models/Cart.js
 */
 
 const express = require('express')
@@ -32,7 +27,6 @@ router.get('/', authMiddleware, async (req, res) => {
   try {
     const cart = await Cart.findOne({ user: req.user.id })
       .populate('items.product')
-    // if no cart found return empty cart object
     if (!cart) return res.json({ items: [] })
     res.json(cart)
   } catch (err) {
@@ -43,15 +37,13 @@ router.get('/', authMiddleware, async (req, res) => {
 // POST /api/cart — add item to cart
 router.post('/', authMiddleware, async (req, res) => {
   try {
-    console.log('POST /cart hit')
-    console.log('req.body:', req.body)
-    console.log('req.user:', req.user)
-
     const { productId, quantity } = req.body
     let cart = await Cart.findOne({ user: req.user.id })
 
+    // create new cart if user doesn't have one yet
     if (!cart) cart = new Cart({ user: req.user.id, items: [] })
 
+    // if product already in cart increase quantity
     const existingItem = cart.items.find(
       item => item.product.toString() === productId
     )
@@ -65,7 +57,6 @@ router.post('/', authMiddleware, async (req, res) => {
     await cart.populate('items.product')
     res.json(cart)
   } catch (err) {
-    console.error('Cart POST error:', err)
     res.status(500).json({ message: 'Server error' })
   }
 })
@@ -105,12 +96,12 @@ router.delete('/:itemId', authMiddleware, async (req, res) => {
   }
 })
 
-// GET /api/admin/carts — get all users' carts (admin only)
+// GET /api/cart/admin/carts — get all users' carts (admin only)
 router.get('/admin/carts', authMiddleware, adminMiddleware, async (req, res) => {
   try {
     const carts = await Cart.find()
-      .populate('user', 'name email') // get user name and email only
-      .populate('items.product')      // get full product details
+      .populate('user', 'name email')
+      .populate('items.product')
     res.json(carts)
   } catch (err) {
     res.status(500).json({ message: 'Server error' })

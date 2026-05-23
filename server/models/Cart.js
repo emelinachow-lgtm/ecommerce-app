@@ -1,17 +1,12 @@
 /*
   CART MODEL — Emelina
   ---------------------
-  This file defines the Cart database schema using Mongoose.
+  Defines the Cart database schema using Mongoose.
 
   STRUCTURE:
   - Each user has ONE cart (enforced by unique: true on user field)
   - Each cart has an array of items
   - Each item references a Product and has a quantity
-
-  DEPENDENCIES:
-  - Requires Sahil's User model exported as mongoose.model('User', ...)
-  - Requires Shraddha's Product model exported as mongoose.model('Product', ...)
-  - If either ref name doesn't match exactly, populate() will fail silently
 
   NOTES:
   - cartItemSchema is a sub-schema — it lives inside Cart, not its own collection
@@ -26,10 +21,6 @@
   - PUT /api/cart/:itemId — updates item quantity
   - DELETE /api/cart/:itemId — removes item from cart
   - GET /api/admin/carts — returns all carts (admin only)
-
-  TO DO:
-  - Confirm with Sahil that his User model is exported as mongoose.model('User', ...)
-  - Confirm with Shraddha that her Product model is exported as mongoose.model('Product', ...)
 */
 
 const mongoose = require('mongoose')

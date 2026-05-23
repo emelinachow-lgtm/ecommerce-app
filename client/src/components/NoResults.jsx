@@ -7,7 +7,7 @@
   - searchTerm (string) — the term the user searched for
 
   USED BY:
-  - client/src/pages/ProductsPage.jsx — Shraddha imports this
+  - client/src/pages/ProductsPage.jsx
 */
 
 import { useNavigate } from 'react-router-dom'
@@ -77,7 +77,7 @@ function NoResults({ searchTerm }) {
 
       {/* view all products button */}
       <button
-        onClick={() => navigate('/products')}
+        onClick={() => navigate('/products', { replace: true })}
         style={{
           background: '#C5EBDA',
           color: '#1A1A1A',

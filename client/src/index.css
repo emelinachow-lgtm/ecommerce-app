@@ -1,21 +1,14 @@
-@import url('https://fonts.googleapis.com/css2?family=Jomhuria&family=Open+Sans+Condensed:wght@300;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Jomhuria&family=Karla:wght@300;400;500;600;700&display=swap');
 
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: 'Open Sans Condensed', sans-serif;
+  font-family: 'Karla', sans-serif;
 }
 
-body {
-  background: #FAFAF5;
-  color: #1A1A1A;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-#root {
-  min-height: 100vh;
+html {
+  overflow-y: auto;
 }
 
 body {
@@ -24,4 +17,8 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   font-size: 16px;
+}
+
+#root {
+  min-height: 100vh;
 }

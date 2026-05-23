@@ -11,14 +11,14 @@
   - DELETE /api/products/:id       — delete product (admin only)
 
   DEPENDENCIES:
-  - authMiddleware from Sahil — verifies JWT
-  - adminMiddleware from Sahil — checks role === "admin"
+  - authMiddleware — verifies JWT
+  - adminMiddleware — checks role === "admin"
   - Product model from server/models/Product.js
 
   CONNECTED TO:
-  - client/src/pages/ProductsPage.jsx — Shraddha
-  - client/src/pages/ProductDetailPage.jsx — Shraddha
-  - client/src/pages/AdminPage.jsx — Emelina
+  - client/src/pages/ProductsPage.jsx
+  - client/src/pages/ProductDetailPage.jsx
+  - client/src/pages/AdminPage.jsx
 */
 
 const express = require('express')
@@ -32,7 +32,7 @@ router.get('/', async (req, res) => {
   try {
     const { search } = req.query
 
-    // if search term provided filter by name or roaster
+    // if search term provided filter by name, roaster or origin
     const query = search
       ? {
           $or: [

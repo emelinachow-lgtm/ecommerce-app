@@ -18,7 +18,7 @@ import { useAuth } from '../context/useAuth'
 import api from '../api'
 
 function ProfilePage() {
-  const { user, logout, login } = useAuth()
+  const { user, logout } = useAuth()
   const navigate = useNavigate()
   const [activeTab, setActiveTab] = useState('account')
 

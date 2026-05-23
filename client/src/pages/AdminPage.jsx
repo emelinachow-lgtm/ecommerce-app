@@ -3,15 +3,8 @@
   --------------------------
   Admin-only page showing all customer carts and product management.
 
-  DEPENDENCIES:
-  - authMiddleware + adminMiddleware from Sahil
-  - Cart routes GET /api/admin/carts from cartRoutes.js
-  - Product routes from productRoutes.js
-  - AddEditProductModal from Sahil
-  - DeleteProductModal from Sahil
-
   ENDPOINTS USED:
-  - GET    /api/admin/carts       — fetch all users carts (admin only)
+  - GET    /api/cart/admin/carts  — fetch all users carts (admin only)
   - GET    /api/products          — fetch all products + stat count
   - GET    /api/users             — fetch all users for stat count
   - POST   /api/products          — add new product
@@ -42,6 +35,8 @@ function AdminPage() {
   const [selectedProduct, setSelectedProduct] = useState(null)
   const navigate = useNavigate()
   const { user, logout } = useAuth()
+  const [selectedCart, setSelectedCart] = useState(null)
+  const [toast, setToast] = useState('')
 
   useEffect(() => {
     async function fetchData() {
@@ -95,15 +90,20 @@ function AdminPage() {
     try {
       if (selectedProduct) {
         await api.put(`/products/${selectedProduct._id}`, productData)
+        setToast('Product updated successfully')
       } else {
         await api.post('/products', productData)
+        setToast('Product added successfully')
       }
       setAddEditOpen(false)
       const productsRes = await api.get('/products')
       setProducts(productsRes.data)
       setStats(prev => ({ ...prev, totalProducts: productsRes.data.length }))
+      setTimeout(() => setToast(''), 3000)
     } catch (err) {
       console.error('Failed to save product:', err)
+      setToast('Failed to save product')
+      setTimeout(() => setToast(''), 3000)
     }
   }
 
@@ -114,8 +114,12 @@ function AdminPage() {
       const productsRes = await api.get('/products')
       setProducts(productsRes.data)
       setStats(prev => ({ ...prev, totalProducts: productsRes.data.length }))
+      setToast('Product deleted successfully')
+      setTimeout(() => setToast(''), 3000)
     } catch (err) {
       console.error('Failed to delete product:', err)
+      setToast('Failed to delete product')
+      setTimeout(() => setToast(''), 3000)
     }
   }
 
@@ -130,7 +134,7 @@ function AdminPage() {
         <div style={{ padding: '0 20px 24px', borderBottom: '0.5px solid rgba(0,0,0,0.1)', marginBottom: '16px' }}>
           <p style={{
             fontSize: '50px', fontWeight: '400', color: '#1A1A1A',
-            margin: 0, lineHeight: 0.85, fontFamily: 'Jomhuria, serif', textTransform: 'uppercase'
+            margin: 0, lineHeight: 0.5, fontFamily: 'Jomhuria, serif', textTransform: 'uppercase'
           }}>espresso<br />yourself</p>
         </div>
 
@@ -283,7 +287,7 @@ function AdminPage() {
                   <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                     <thead>
                       <tr style={{ background: '#F5F5F3' }}>
-                        {['Customer', 'Items in cart', 'Qty', 'Cart total', 'Status', ''].map((h, i) => (
+                        {['Customer', 'Items in cart', 'Cart total', 'Status', ''].map((h, i) => (
                           <th key={i} style={{
                             padding: '12px 18px', textAlign: 'left', fontSize: '14px',
                             fontWeight: '700', color: '#6B6B6B', textTransform: 'uppercase',
@@ -298,6 +302,7 @@ function AdminPage() {
                           return sum + (item.product?.price || 0) * item.quantity
                         }, 0)
                         const isActive = cart.items.length > 0
+                        const totalItems = cart.items.reduce((sum, item) => sum + item.quantity, 0)
                         return (
                           <tr key={cart._id} style={{ borderBottom: '0.5px solid #E8E8E4' }}>
                             <td style={{ padding: '16px 18px' }}>
@@ -309,28 +314,9 @@ function AdminPage() {
                               </p>
                             </td>
                             <td style={{ padding: '16px 18px' }}>
-                              {cart.items.length === 0 ? (
-                                <span style={{ fontSize: '14px', color: '#6B6B6B', fontStyle: 'italic' }}>No items</span>
-                              ) : (
-                                <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
-                                  {cart.items.map(item => (
-                                    <span key={item._id} style={{ fontSize: '14px', color: '#1A1A1A' }}>
-                                      {item.product?.name} — {item.product?.variant}
-                                    </span>
-                                  ))}
-                                </div>
-                              )}
-                            </td>
-                            <td style={{ padding: '16px 18px' }}>
-                              {cart.items.length === 0 ? (
-                                <span style={{ fontSize: '14px', color: '#6B6B6B' }}>—</span>
-                              ) : (
-                                <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
-                                  {cart.items.map(item => (
-                                    <span key={item._id} style={{ fontSize: '14px', color: '#6B6B6B' }}>× {item.quantity}</span>
-                                  ))}
-                                </div>
-                              )}
+                              <span style={{ fontSize: '14px', color: isActive ? '#1A1A1A' : '#6B6B6B', fontStyle: isActive ? 'normal' : 'italic' }}>
+                                {isActive ? `${totalItems} item${totalItems !== 1 ? 's' : ''}` : 'No items'}
+                              </span>
                             </td>
                             <td style={{ padding: '16px 18px' }}>
                               <span style={{ fontSize: '16px', fontWeight: '700', color: cartTotal === 0 ? '#6B6B6B' : '#1A1A1A' }}>
@@ -347,14 +333,16 @@ function AdminPage() {
                               }}>{isActive ? 'Active' : 'Empty'}</span>
                             </td>
                             <td style={{ padding: '16px 18px' }}>
-                              <button style={{
-                                background: isActive ? '#C5EBDA' : 'transparent',
-                                color: '#1A1A1A',
-                                border: isActive ? 'none' : '0.5px solid #E8E8E4',
-                                padding: '8px 16px', borderRadius: '999px', fontSize: '13px',
-                                fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.04em',
-                                cursor: isActive ? 'pointer' : 'default'
-                              }}>
+                              <button
+                                onClick={() => isActive && setSelectedCart(cart)}
+                                style={{
+                                  background: isActive ? '#C5EBDA' : 'transparent',
+                                  color: '#1A1A1A',
+                                  border: isActive ? 'none' : '0.5px solid #E8E8E4',
+                                  padding: '8px 16px', borderRadius: '999px', fontSize: '13px',
+                                  fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.04em',
+                                  cursor: isActive ? 'pointer' : 'default'
+                                }}>
                                 {isActive ? 'View Order' : '—'}
                               </button>
                             </td>
@@ -454,6 +442,84 @@ function AdminPage() {
         </div>
       </div>
 
+        {/* cart order modal */}
+        {selectedCart && (
+          <>
+            <div
+              onClick={() => setSelectedCart(null)}
+              style={{
+                position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+                background: 'rgba(0,0,0,0.45)', zIndex: 200
+              }}
+            />
+            <div style={{
+              position: 'fixed', top: '50%', left: '50%',
+              transform: 'translate(-50%, -50%)',
+              background: '#FFFFFF', borderRadius: '20px',
+              padding: '32px', width: '520px', maxWidth: '90vw',
+              maxHeight: '80vh', overflowY: 'auto',
+              zIndex: 201, boxShadow: '0 20px 60px rgba(0,0,0,0.2)'
+            }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '24px' }}>
+                <div>
+                  <p style={{
+                    fontSize: '28px', fontWeight: '400', color: '#1A1A1A',
+                    textTransform: 'uppercase', fontFamily: 'Jomhuria, serif',
+                    margin: '0 0 4px', lineHeight: 1
+                  }}>{selectedCart.user?.name}'s Order</p>
+                  <p style={{ fontSize: '14px', color: '#6B6B6B', margin: 0 }}>
+                    {selectedCart.user?.email}
+                  </p>
+                </div>
+                <button
+                  onClick={() => setSelectedCart(null)}
+                  style={{
+                    background: 'none', border: 'none', cursor: 'pointer',
+                    fontSize: '24px', color: '#6B6B6B', padding: 0, lineHeight: 1
+                  }}>×</button>
+              </div>
+
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '24px' }}>
+                {selectedCart.items.map(item => (
+                  <div key={item._id} style={{
+                    display: 'flex', alignItems: 'center', gap: '14px',
+                    background: '#F5F5CC', borderRadius: '12px', padding: '14px'
+                  }}>
+                    <img
+                      src={item.product?.image}
+                      alt={item.product?.name}
+                      style={{ width: '60px', height: '60px', objectFit: 'cover', borderRadius: '8px', flexShrink: 0 }}
+                    />
+                    <div style={{ flex: 1 }}>
+                      <p style={{
+                        fontSize: '30px', fontWeight: '400', color: '#1A1A1A',
+                        textTransform: 'uppercase', fontFamily: 'Jomhuria, serif',
+                        margin: '0 0 2px', lineHeight: 1, letterSpacing: '0.02em'
+                      }}>{item.product?.name}</p>
+                      <p style={{ fontSize: '13px', color: '#6B6B6B', margin: 0 }}>
+                        {item.product?.variant} · Qty: {item.quantity}
+                      </p>
+                    </div>
+                    <p style={{ fontSize: '16px', fontWeight: '700', color: '#1A1A1A', margin: 0, flexShrink: 0 }}>
+                      ${(item.product?.price * item.quantity).toFixed(2)}
+                    </p>
+                  </div>
+                ))}
+              </div>
+
+              <div style={{
+                borderTop: '1.5px solid #E8E8E4', paddingTop: '16px',
+                display: 'flex', justifyContent: 'space-between', alignItems: 'center'
+              }}>
+                <span style={{ fontSize: '16px', fontWeight: '700', color: '#1A1A1A' }}>Total</span>
+                <span style={{ fontSize: '20px', fontWeight: '900', color: '#1A1A1A' }}>
+                  ${selectedCart.items.reduce((sum, item) => sum + (item.product?.price || 0) * item.quantity, 0).toFixed(2)} AUD
+                </span>
+              </div>
+            </div>
+          </>
+        )}
+
       {/* modals */}
       <AddEditProductModal
         isOpen={addEditOpen}
@@ -467,6 +533,34 @@ function AdminPage() {
         onConfirm={handleConfirmDelete}
         productName={selectedProduct?.name}
       />
+
+      {toast && (
+        <div style={{
+          position: 'fixed',
+          bottom: '32px',
+          left: 0,
+          right: 0,
+          display: 'flex',
+          justifyContent: 'center',
+          zIndex: 300,
+          pointerEvents: 'none'
+        }}>
+          <div style={{
+            background: '#C5EBDA',
+            color: '#1A1A1A',
+            padding: '14px 24px',
+            borderRadius: '999px',
+            fontSize: '15px',
+            fontWeight: '700',
+            textTransform: 'uppercase',
+            letterSpacing: '0.04em',
+            boxShadow: '0 4px 20px rgba(0,0,0,0.1)',
+            pointerEvents: 'auto'
+          }}>
+            {toast}
+          </div>
+        </div>
+      )}
 
     </div>
   )
