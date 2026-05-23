@@ -1,26 +1,28 @@
 /*
   PROFILE PAGE — Khushi
   ----------------------
-  Customer profile page with three tabs:
+  Customer profile page with four tabs:
   - Account Details — view and edit name, email
   - Order History — view current cart items
+  - Membership — view points balance and tier
   - Password — change password
 
   ENDPOINTS USED:
   - GET    /api/users/:id        — fetch user details on mount
   - PUT    /api/users/:id        — update name, email, password
-  - GET    /api/cart             — fetch order history
+  - GET    /api/cart             — fetch order history and calculate points
 */
 
 import { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 import { useAuth } from '../context/useAuth'
 import api from '../api'
 
 function ProfilePage() {
   const { user, logout } = useAuth()
   const navigate = useNavigate()
-  const [activeTab, setActiveTab] = useState('account')
+  const location = useLocation()
+  const [activeTab, setActiveTab] = useState(location.state?.tab || 'account')
 
   const [firstName, setFirstName] = useState('')
   const [lastName, setLastName] = useState('')
@@ -39,7 +41,23 @@ function ProfilePage() {
   const [orders, setOrders] = useState([])
   const [ordersLoading, setOrdersLoading] = useState(false)
 
+  const [points, setPoints] = useState(0)
+  const [membershipLoading, setMembershipLoading] = useState(false)
+
   const initials = `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase()
+
+  // helper — get tier based on points
+  const getTier = (pts) => {
+    if (pts >= 1500) return { name: 'Roaster', next: null, nextPts: null, min: 1500, max: null, color: '#1A1A1A', textColor: '#C5EBDA' }
+    if (pts >= 500) return { name: 'Brewer', next: 'Roaster', nextPts: 1500, min: 500, max: 1500, color: '#C5EBDA', textColor: '#1A4D3A' }
+    return { name: 'Sipper', next: 'Brewer', nextPts: 500, min: 0, max: 500, color: '#F5F5CC', textColor: '#1A1A1A' }
+  }
+
+  // helper — get progress to next tier
+  const getProgress = (pts, tier) => {
+    if (!tier.max) return 100
+    return Math.min(((pts - tier.min) / (tier.max - tier.min)) * 100, 100)
+  }
 
   // fetch user details on mount
   useEffect(() => {
@@ -75,6 +93,25 @@ function ProfilePage() {
     fetchOrders()
   }, [activeTab])
 
+  // fetch points when membership tab clicked
+  useEffect(() => {
+    if (activeTab !== 'membership') return
+    async function fetchPoints() {
+      try {
+        setMembershipLoading(true)
+        const res = await api.get('/cart')
+        const items = res.data.items || []
+        const total = items.reduce((sum, item) => sum + (item.product?.price || 0) * item.quantity, 0)
+        setPoints(Math.floor(total))
+      } catch (err) {
+        console.error('Failed to fetch points:', err)
+      } finally {
+        setMembershipLoading(false)
+      }
+    }
+    fetchPoints()
+  }, [activeTab])
+
   const handleSaveAccount = async () => {
     setAccountError('')
     setAccountSuccess('')
@@ -88,7 +125,6 @@ function ProfilePage() {
         name: `${firstName} ${lastName}`.trim(),
         email
       })
-      // update auth context and localStorage with new details
       const updatedUser = { ...user, name: res.data.name, email: res.data.email }
       localStorage.setItem('user', JSON.stringify(updatedUser))
       setFirstName(res.data.name.split(' ')[0] || '')
@@ -159,24 +195,22 @@ function ProfilePage() {
 
         {/* tabs */}
         <div style={{
-          display: 'flex',
-          borderBottom: '1.5px solid #1A1A1A',
-          marginBottom: '24px',
-          justifyContent: 'center'
+          display: 'flex', borderBottom: '1.5px solid #1A1A1A',
+          marginBottom: '24px', justifyContent: 'center'
         }}>
-          {['account', 'orders', 'password'].map(tab => (
+          {['account', 'orders', 'membership', 'password'].map(tab => (
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
               style={{
-                padding: '10px 24px', fontSize: '14px', fontWeight: '700',
+                padding: '10px 20px', fontSize: '14px', fontWeight: '700',
                 textTransform: 'uppercase', letterSpacing: '0.06em',
                 color: activeTab === tab ? '#1A1A1A' : '#6B6B6B',
                 background: 'none', border: 'none',
                 borderBottom: activeTab === tab ? '3px solid #1A1A1A' : '3px solid transparent',
                 marginBottom: '-1.5px', cursor: 'pointer', fontFamily: 'inherit'
               }}>
-              {tab === 'account' ? 'Account Details' : tab === 'orders' ? 'Order History' : 'Password'}
+              {tab === 'account' ? 'Account' : tab === 'orders' ? 'Orders' : tab === 'membership' ? 'Membership' : 'Password'}
             </button>
           ))}
         </div>
@@ -255,6 +289,129 @@ function ProfilePage() {
                 </div>
               ))
             )}
+          </div>
+        )}
+
+        {/* membership tab */}
+        {activeTab === 'membership' && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+            {membershipLoading ? (
+              <p style={{ textAlign: 'center', color: '#6B6B6B', fontSize: '16px' }}>Loading membership...</p>
+            ) : (() => {
+              const tier = getTier(points)
+              const progress = getProgress(points, tier)
+              return (
+                <>
+                  {/* current tier card */}
+                  <div style={{
+                    background: '#FFFFFF', borderRadius: '20px',
+                    border: '0.5px solid #E8E8E4', padding: '32px 36px'
+                  }}>
+                    <p style={sectionTitleStyle}>Your Membership</p>
+
+                    {/* tier badge + points */}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '24px' }}>
+                      <div style={{
+                        width: '56px', height: '56px', borderRadius: '50%',
+                        background: tier.color, display: 'flex', alignItems: 'center',
+                        justifyContent: 'center', flexShrink: 0
+                      }}>
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke={tier.textColor} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/>
+                          <line x1="3" y1="6" x2="21" y2="6"/>
+                        </svg>
+                      </div>
+                      <div>
+                        <p style={{
+                          fontSize: '32px', fontWeight: '400', color: '#1A1A1A',
+                          fontFamily: 'Jomhuria, serif', textTransform: 'uppercase',
+                          margin: '0 0 2px', lineHeight: 1, letterSpacing: '0.02em'
+                        }}>{tier.name}</p>
+                        <p style={{ fontSize: '14px', color: '#6B6B6B', margin: 0 }}>Current tier</p>
+                      </div>
+                      <div style={{ marginLeft: 'auto', textAlign: 'right' }}>
+                        <p style={{
+                          fontSize: '40px', fontWeight: '400', color: '#1A1A1A',
+                          fontFamily: 'Jomhuria, serif', margin: '0 0 2px', lineHeight: 1
+                        }}>{points}</p>
+                        <p style={{ fontSize: '14px', color: '#6B6B6B', margin: 0 }}>points</p>
+                      </div>
+                    </div>
+
+                    {/* progress bar */}
+                    {tier.next && (
+                      <>
+                        <div style={{
+                          height: '8px', background: '#F5F5F3', borderRadius: '999px',
+                          overflow: 'hidden', marginBottom: '8px'
+                        }}>
+                          <div style={{
+                            height: '100%', width: `${progress}%`,
+                            background: '#C5EBDA', borderRadius: '999px',
+                            transition: 'width 0.5s ease'
+                          }} />
+                        </div>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                          <p style={{ fontSize: '13px', color: '#6B6B6B', margin: 0 }}>
+                            {tier.nextPts - points} pts to <strong style={{ color: '#1A1A1A' }}>{tier.next}</strong>
+                          </p>
+                          <p style={{ fontSize: '13px', color: '#6B6B6B', margin: 0 }}>
+                            {tier.nextPts} pts
+                          </p>
+                        </div>
+                      </>
+                    )}
+
+                    {!tier.next && (
+                      <p style={{
+                        fontSize: '14px', color: '#1A4D3A', background: '#E8F7F2',
+                        padding: '10px 14px', borderRadius: '8px', margin: 0, fontWeight: '700',
+                        textTransform: 'uppercase', letterSpacing: '0.04em'
+                      }}>
+                        You've reached the highest tier!
+                      </p>
+                    )}
+                  </div>
+
+                  {/* perks card */}
+                  <div style={{
+                    background: '#FFFFFF', borderRadius: '20px',
+                    border: '0.5px solid #E8E8E4', padding: '32px 36px'
+                  }}>
+                    <p style={sectionTitleStyle}>Your Perks</p>
+                    <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                      {[
+                        tier.name === 'Sipper' ? '5% off all purchases' : tier.name === 'Brewer' ? '10% off all purchases' : '15% off all purchases',
+                        tier.name === 'Sipper' ? 'Earn 1 pt per $1 spent' : tier.name === 'Brewer' ? 'Earn 1.5 pts per $1 spent' : 'Earn 2 pts per $1 spent',
+                        'Birthday discount',
+                        ...(tier.name !== 'Sipper' ? ['Free shipping, always', 'Early access to new roasts'] : []),
+                        ...(tier.name === 'Roaster' ? ['Free priority shipping', 'First dibs on exclusive drops', 'Personalised roast curation'] : []),
+                      ].map((perk, i) => (
+                        <li key={i} style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '15px', color: '#1A1A1A' }}>
+                          <span style={{
+                            width: '20px', height: '20px', borderRadius: '50%',
+                            background: '#C5EBDA', display: 'flex', alignItems: 'center',
+                            justifyContent: 'center', flexShrink: 0
+                          }}>
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#1A4D3A" strokeWidth="3">
+                              <polyline points="20 6 9 17 4 12"/>
+                            </svg>
+                          </span>
+                          {perk}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+
+                  {/* cta */}
+                  <button
+                    onClick={() => navigate('/subscribe')}
+                    style={greenBtnStyle}>
+                    View All Membership Tiers
+                  </button>
+                </>
+              )
+            })()}
           </div>
         )}
 
