@@ -239,4 +239,5 @@ ecommerce-app/
 - All API routes are tested and functional
 - JWT tokens expire after 7 days
 - Role-based access control is enforced on both frontend (protected routes) and backend (middleware)
+- The database export at `db/products.json` contains all 15 products and can be used to reseed the database by running `node server/Seed.js`
 
