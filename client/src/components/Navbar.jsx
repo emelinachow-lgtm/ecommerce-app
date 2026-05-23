@@ -81,15 +81,18 @@ function Navbar({ onCartOpen }) {
 
         {/* logo */}
         <Link
-          to="/"
+          to="/products"
           style={{
-            fontSize: '22px',
-            fontWeight: '900',
+            fontSize: '48px',
+            fontWeight: '400',
             color: '#1A1A1A',
             textDecoration: 'none',
-            fontFamily: 'inherit'
+            fontFamily: 'Jomhuria, serif',
+            textTransform: 'uppercase',
+            lineHeight: 0.5,
+            letterSpacing: '0.02em'
           }}>
-          espresso yourself
+          espresso<br />yourself
         </Link>
 
         {/* nav links */}

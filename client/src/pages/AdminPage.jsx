@@ -131,7 +131,7 @@ function AdminPage() {
         <div style={{ padding: '0 20px 24px', borderBottom: '0.5px solid rgba(0,0,0,0.1)', marginBottom: '16px' }}>
           <p style={{
             fontSize: '50px', fontWeight: '400', color: '#1A1A1A',
-            margin: 0, lineHeight: 0.85, fontFamily: 'Jomhuria, serif', textTransform: 'uppercase'
+            margin: 0, lineHeight: 0.5, fontFamily: 'Jomhuria, serif', textTransform: 'uppercase'
           }}>espresso<br />yourself</p>
         </div>
 
