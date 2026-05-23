@@ -77,7 +77,7 @@ function NoResults({ searchTerm }) {
 
       {/* view all products button */}
       <button
-        onClick={() => navigate('/products')}
+        onClick={() => navigate('/products', { replace: true })}
         style={{
           background: '#C5EBDA',
           color: '#1A1A1A',

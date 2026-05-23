@@ -113,8 +113,8 @@ function AddEditProductModal({ isOpen, onClose, onSave, existingProduct }) {
 
         {/* heading */}
         <p style={{
-          fontSize: '42px',
-          fontWeight: '900',
+          fontSize: '50px',
+          fontWeight: '400',
           color: '#1A1A1A',
           textTransform: 'uppercase',
           letterSpacing: '0.02em',
