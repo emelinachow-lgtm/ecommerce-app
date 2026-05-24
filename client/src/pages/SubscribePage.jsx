@@ -1,5 +1,5 @@
 /*
-  SUBSCRIBE PAGE — Shraddha & Khushi
+  SUBSCRIBE PAGE — Shraddha 
   ------------------------------------
   Membership tiers page showing Sipper, Brewer and Roaster tiers
   with perks and points required to unlock each tier.
@@ -78,14 +78,14 @@ function SubscribePage() {
 
       {/* eyebrow */}
       <p style={{
-        fontSize: '13px', fontWeight: '700', letterSpacing: '0.1em',
-        textTransform: 'uppercase', color: '#6B6B6B', margin: '0 0 12px'
+        fontSize: '15px', fontWeight: '700', letterSpacing: '0.1em',
+        textTransform: 'uppercase', color: '#6B6B6B', margin: '0 0 30px'
       }}>Membership Tiers</p>
 
       {/* heading */}
       <p style={{
-        fontFamily: 'Jomhuria, serif', fontSize: '80px', fontWeight: '400',
-        color: '#1A1A1A', lineHeight: 0.9, textTransform: 'uppercase',
+        fontFamily: 'Jomhuria, serif', fontSize: '90px', fontWeight: '400',
+        color: '#1A1A1A', lineHeight: 0.5, textTransform: 'uppercase',
         margin: '0 0 24px'
       }}>
         The more you sip,<br />the more you save.
