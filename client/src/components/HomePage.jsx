@@ -55,7 +55,7 @@ import every1 from '../LAassets/every1.png'
 import every2 from '../LAassets/every2.png'
 import every3 from '../LAassets/every3.png'
 
-function HomePage() {
+function HomePage({ hideSkip = false }) {
   const navigate = useNavigate()
   const animFrameRef = useRef(null)
 
@@ -752,17 +752,19 @@ function HomePage() {
       `}</style>
 
       {/* skip button */}
-      <button
-        onClick={handleSkip}
-        style={{
-          position: 'fixed', top: '24px', right: '24px', zIndex: 999,
-          background: 'rgba(255,255,255,0.8)', border: '1.5px solid #1A1A1A',
-          padding: '8px 20px', borderRadius: '999px', fontSize: '13px',
-          fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.06em',
-          cursor: 'pointer', fontFamily: 'inherit', pointerEvents: 'auto'
-        }}>
-        Skip →
-      </button>
+      {!hideSkip && (
+        <button
+          onClick={handleSkip}
+          style={{
+            position: 'fixed', top: '24px', right: '24px', zIndex: 999,
+            background: 'rgba(255,255,255,0.8)', border: '1.5px solid #1A1A1A',
+            padding: '8px 20px', borderRadius: '999px', fontSize: '13px',
+            fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.06em',
+            cursor: 'pointer', fontFamily: 'inherit', pointerEvents: 'auto'
+          }}>
+          Skip →
+        </button>
+      )}
 
       {/* stage */}
       <div
