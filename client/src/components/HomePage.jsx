@@ -24,8 +24,8 @@ import { useNavigate } from 'react-router-dom'
 
 import hill_b from '../LAassets/hill_b.webp'
 import hill_f from '../LAassets/hill_f.webp'
-import t_coffee from '../LAassets/t_coffee.webp'
-import t_smell from '../LAassets/t_smell.webp'
+import t_coffee from '../LAassets/t_coffee.png'
+import t_smell from '../LAassets/t_smell.png'
 import sp_bl from '../LAassets/sp_bl.webp'
 import sp_bc from '../LAassets/s2_h.webp'
 import sp_br from '../LAassets/sp_br.webp'
@@ -194,7 +194,7 @@ function HomePage({ hideSkip = false }) {
       const hold1 = Math.min(e4 + 0.04, 0.74)
       const hold2 = hold1 + 0.10
       const hold3 = hold2 + 0.06
-      const fade0 = 0.90 + stagger * 0.03
+      const fade0 = 1.70 + stagger * 0.03
       const fade1 = fade0 + 0.06
       const fade2 = fade0 + 0.12
       const fade3 = fade0 + 0.18
@@ -239,7 +239,7 @@ function HomePage({ hideSkip = false }) {
       const y3 = y2 + 13 + (seed % 11) * 2.5
       const y4 = y3 + 12 + (seed % 9) * 2.7
       const y5 = clamp(y4 + 11 + (seed % 8) * 2.4, 10, 92)
-      const step = 0.062 + (seed % 6) * 0.009
+      const step = 0.09 + (seed % 6) * 0.012
       const t1 = t0, t2 = t0 + step, t3 = t0 + step * 2, t4 = t0 + step * 3
       const t5 = t0 + step * 4, t6 = t0 + step * 5, t7 = t0 + step * 6
       const t8 = t0 + step * 7.5
@@ -299,16 +299,16 @@ function HomePage({ hideSkip = false }) {
         [3.62, 50, 46, 0, 0.82, 0.45],
         [3.78, 50, 38, 0, 0.98, 0.82],
         [3.92, 50, 32, 0, 1.08, 1],
-        [4.08, 50, 30, 0, 1.1, 1],
-        [5.0, 50, 30, 0, 1.1, 1]
+        [4.08, 50, 30, 0, 1.08, 1],
+        [5.0, 50, 30, 0, 1.08, 1]
       ]
     }
 
     const ITEMS = [
       { id: 'hill_b', float: .08, k: [[0, 50, 100, 0, 1.08, 1], [.55, 50, 100, 0, 1.05, .55], [.64, 50, 100, 0, 1.04, .48], [.74, 50, 100, 0, 1.03, .32], [.84, 50, 101, 0, 1.02, .16], [.94, 50, 108, 0, 1.06, 0], [3.6, 50, 108, 0, 1.06, 0]] },
       { id: 'hill_f', float: .10, k: [[0, 50, 100, 0, 1, 1], [.55, 50, 100, 0, 1.02, .55], [.62, 50, 100, 0, 1.02, .46], [.72, 50, 101, 0, 1.02, .30], [.82, 50, 103, 0, 1.01, .14], [.92, 50, 105, 0, 1.04, 0], [3.6, 50, 106, 0, 1.04, 0]] },
-      { id: 't_smell', float: 0, k: [[0, 50, 21, 0, .98, 1], [.35, 50, 11, 0, 1, .85], [.72, 50, -14, 0, 1.04, 0], [3.6, 50, -14, 0, 1.04, 0]] },
-      { id: 't_coffee', float: 0, k: [[0, 50, 45, 0, 1.02, 1], [.35, 50, 34, 0, 1.06, .85], [.72, 50, 8, 0, 1.08, 0], [3.6, 50, 8, 0, 1.08, 0]] },
+      { id: 't_smell', float: 0, k: [[0, 50, 24, 0, 1.05, 1], [.35, 50, 8, 0, 1.08, .85], [.72, 50, -14, 0, 1.10, 0], [3.6, 50, -14, 0, 1.10, 0]] },
+      { id: 't_coffee', float: 0, k: [[0, 50, 44, 0, 1.02, 1], [.35, 50, 34, 0, 1.06, .85], [.72, 50, 8, 0, 1.08, 0], [3.6, 50, 8, 0, 1.08, 0]] },
       { id: 'br_tr', float: .36, k: [[0, 97, 11, 2, 1.05, 1], [.50, 98, 9, 0, 1, .9], [.58, 100, 7, -4, .88, .4], [.65, 102, 5, -6, 0, 0], [3.6, 102, 5, -6, 0, 0]] },
       { id: 'sp_bl', float: .34, k: [[0, 10, 92, -8, .95, 1], [.50, 11, 91, -7, .94, 1], [.58, 12, 90, -6, .88, .5], [.65, 14, 91, -5, .65, 0], [3.6, 14, 91, -5, .65, 0]] },
       { id: 'sp_bc', float: .28, k: [[0, 75, 96, 2, .88, 1], [.50, 76, 95, 1, .86, 1], [.58, 77, 94, 0, .8, .45], [.65, 78, 95, -2, .65, 0], [3.6, 78, 95, -2, .65, 0]] },
@@ -347,8 +347,8 @@ function HomePage({ hideSkip = false }) {
       { id: 's2_fill_c10', float: .12, k: frameKFill(79, 81, -10, .88) },
       { id: 's2_fill_c11', float: .14, k: frameKFill(50, 21, 0, .95) },
       { id: 's2_fill_c12', float: .14, k: frameKFill(50, 79, 0, .95) },
-      { id: 'every1', float: .08, k: frameKCenter(50, 47, 0, 1.32) },
-      { id: 'every2', float: .08, k: frameKCenter(50, 53, 0, 1.24) },
+      { id: 'every1', float: .08, k: frameKCenter(50, 40, 0, 1.5) },
+      { id: 'every2', float: .08, k: frameKCenter(50, 53, 0, 1.28) },
       { id: 's2_fill_f1', float: .10, k: frameKFill(7, 35, 82, .85) },
       { id: 's2_fill_f2', float: .10, k: frameKFill(93, 35, -82, .85) },
       { id: 's2_fill_f3', float: .10, k: frameKFill(7, 65, 78, .85) },
