@@ -1,3 +1,24 @@
+/*
+  APP — Emelina
+  --------------
+  Root component. Sets up routing, cart sidebar and navbar.
+
+  ROUTES:
+  - /              → LoginPage
+  - /login         → LoginPage
+  - /register      → RegisterPage
+  - /welcome       → HomePage (landing animation, protected)
+  - /our-story     → OurStoryPage (protected)
+  - /products      → ProductsPage (protected)
+  - /products/:id  → ProductDetailPage (protected)
+  - /cart          → CartPage (protected)
+  - /profile       → ProfilePage (protected)
+  - /subscribe     → SubscribePage (protected)
+  - /checkout      → CheckoutPage (protected)
+  - /admin         → AdminPage (admin only)
+  - *              → ErrorPage
+*/
+
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import { useState } from 'react'
 import Navbar from './components/Navbar'
@@ -15,6 +36,7 @@ import AdminPage from './pages/AdminPage'
 import ErrorPage from './pages/ErrorPage'
 import CheckoutPage from './pages/CheckoutPage'
 import SubscribePage from './pages/SubscribePage'
+import OurStoryPage from './pages/OurStoryPage'
 
 function App() {
   const [cartOpen, setCartOpen] = useState(false)
@@ -22,9 +44,12 @@ function App() {
   return (
     <BrowserRouter>
       <CartSidebar isOpen={cartOpen} onClose={() => setCartOpen(false)} />
+
+      {/* navbar — hidden on admin, welcome and our-story pages */}
       <Routes>
         <Route path='/admin/*' element={null} />
         <Route path='/welcome' element={null} />
+        <Route path='/our-story' element={null} />
         <Route path='*' element={<Navbar onCartOpen={() => setCartOpen(true)} />} />
       </Routes>
 
@@ -35,6 +60,11 @@ function App() {
         <Route path='/welcome' element={
           <ProtectedRoute>
             <HomePage />
+          </ProtectedRoute>
+        } />
+        <Route path='/our-story' element={
+          <ProtectedRoute>
+            <OurStoryPage />
           </ProtectedRoute>
         } />
         <Route path='/products' element={
