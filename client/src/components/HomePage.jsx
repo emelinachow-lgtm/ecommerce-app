@@ -2,8 +2,9 @@
   HOME PAGE / LANDING ANIMATION — Khushi
   ----------------------------------------
   Scroll-driven landing animation shown to customers after login.
-  Auto-scrolls through 5 scenes over 10 seconds then redirects to /products.
+  Redirects to /products when user reaches the end.
   Skip button allows users to bypass the animation.
+  Also used by OurStoryPage.jsx.
 
   SCENES:
   1. Tea plantation with hills and cherry clusters
@@ -12,7 +13,7 @@
   4. Pour shot and glass appear with product bags
   5. Bags line up horizontally with final text
 
-  ASSETS: All in client/src/assets/
+  ASSETS: All in client/src/assets/  
 
   CONNECTED TO:
   - App.jsx — rendered at /welcome route (protected)
@@ -22,38 +23,38 @@
 import { useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 
-import hill_b from '../LAassets/hill_b.webp'
-import hill_f from '../LAassets/hill_f.webp'
-import t_coffee from '../LAassets/t_coffee.png'
-import t_smell from '../LAassets/t_smell.png'
-import sp_bl from '../LAassets/sp_bl.webp'
-import sp_bc from '../LAassets/s2_h.webp'
-import sp_br from '../LAassets/sp_br.webp'
-import br_tr from '../LAassets/br_tr.webp'
-import s2_f from '../LAassets/s2_f.webp'
-import s2_h from '../LAassets/s2_h.webp'
-import s2_a from '../LAassets/s2_a.webp'
-import s2_c from '../LAassets/s2_c.webp'
-import s2_g from '../LAassets/s2_g.webp'
-import s2_i from '../LAassets/s2_i.png'
-import s2_j from '../LAassets/s2_j.png'
-import s2_k from '../LAassets/s2_k.png'
-import bn_a from '../LAassets/bn_a.webp'
-import bn_b from '../LAassets/bn_b.webp'
-import bn_c from '../LAassets/bn_c.webp'
-import bn_d from '../LAassets/bn_d.webp'
-import cone from '../LAassets/cone.webp'
-import drop from '../LAassets/drop.webp'
-import glass from '../LAassets/glass.webp'
-import bag1 from '../LAassets/bag1.webp'
-import bag2 from '../LAassets/bag2.webp'
-import bag3 from '../LAassets/bag3.webp'
-import bag4 from '../LAassets/bag4.webp'
-import bag5 from '../LAassets/bag5.webp'
-import bag6 from '../LAassets/bag6.webp'
-import every1 from '../LAassets/every1.png'
-import every2 from '../LAassets/every2.png'
-import every3 from '../LAassets/every3.png'
+import hill_b from '../assets/hill_b.webp'
+import hill_f from '../assets/hill_f.webp'
+import t_coffee from '../assets/t_coffee.png'
+import t_smell from '../assets/t_smell.png'
+import sp_bl from '../assets/sp_bl.webp'
+import sp_bc from '../assets/s2_h.webp'
+import sp_br from '../assets/sp_br.webp'
+import br_tr from '../assets/br_tr.webp'
+import s2_f from '../assets/s2_f.webp'
+import s2_h from '../assets/s2_h.webp'
+import s2_a from '../assets/s2_a.webp'
+import s2_c from '../assets/s2_c.webp'
+import s2_g from '../assets/s2_g.webp'
+import s2_i from '../assets/s2_i.png'
+import s2_j from '../assets/s2_j.png'
+import s2_k from '../assets/s2_k.png'
+import bn_a from '../assets/bn_a.webp'
+import bn_b from '../assets/bn_b.webp'
+import bn_c from '../assets/bn_c.webp'
+import bn_d from '../assets/bn_d.webp'
+import cone from '../assets/cone.webp'
+import drop from '../assets/drop.webp'
+import glass from '../assets/glass.webp'
+import bag1 from '../assets/bag1.webp'
+import bag2 from '../assets/bag2.webp'
+import bag3 from '../assets/bag3.webp'
+import bag4 from '../assets/bag4.webp'
+import bag5 from '../assets/bag5.webp'
+import bag6 from '../assets/bag6.webp'
+import every1 from '../assets/every1.png'
+import every2 from '../assets/every2.png'
+import every3 from '../assets/every3.png'
 
 function HomePage({ hideSkip = false }) {
   const navigate = useNavigate()
