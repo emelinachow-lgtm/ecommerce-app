@@ -8,16 +8,16 @@ A full-stack e-commerce web application for purchasing Australian specialty coff
 
 | Name | Role | Files Written |
 |------|------|---------------|
-| Emelina Chow | Project Lead, Backend Lead | `server/index.js`, `server/models/Cart.js`, `server/routes/authRoutes.js`, `server/routes/userRoutes.js`, `server/routes/cartRoutes.js`, `server/middleware/authMiddleware.js`, `server/middleware/adminMiddleware.js`, `server/seed.js`, `client/src/App.jsx`, `client/src/context/AuthProvider.jsx`, `client/src/context/AuthContext.js`, `client/src/context/useAuth.js`, `client/src/api.js`, `client/src/pages/AdminPage.jsx`, `client/src/pages/CartPage.jsx`, `client/src/pages/CheckoutPage.jsx`, `client/src/components/CartSidebar.jsx`, `client/src/components/ProtectedRoute.jsx`. Led all backend development including server setup, JWT authentication system, middleware, database models and API routes. Coordinated overall project delivery and ensured the team's UI/UX design direction was accurately and consistently implemented in code. |
+| Emelina Chow | Project Lead, Backend Lead | `server/index.js`, `server/models/Cart.js`, `server/routes/authRoutes.js`, `server/routes/userRoutes.js`, `server/routes/cartRoutes.js`, `server/middleware/authMiddleware.js`, `server/middleware/adminMiddleware.js`, `server/Seed.js`, `client/src/App.jsx`, `client/src/context/AuthProvider.jsx`, `client/src/context/AuthContext.js`, `client/src/context/useAuth.js`, `client/src/api.js`, `client/src/pages/AdminPage.jsx`, `client/src/pages/CartPage.jsx`, `client/src/pages/CheckoutPage.jsx`, `client/src/components/CartSidebar.jsx`, `client/src/components/ProtectedRoute.jsx`. Led all backend development including server setup, JWT authentication system, middleware, database models and API routes. Coordinated overall project delivery and ensured the team's UI/UX design direction was accurately and consistently implemented in code. |
 | Sahil Turbadkar | Frontend Development, UI/UX Design | `client/src/pages/LoginPage.jsx`, `client/src/pages/RegisterPage.jsx`, `client/src/components/AddEditProductModal.jsx`, `client/src/components/DeleteProductModal.jsx`, `client/src/components/NoResults.jsx`. Implemented the login and registration UI, admin product management modals and no results component. Actively contributed to the team's UI/UX design process including designing the authentication flow, form interactions and modal layouts in Figma. |
 | Shraddha | Frontend Development, UI/UX Design | `server/models/Product.js`, `server/routes/productRoutes.js`, `client/src/pages/ProductsPage.jsx`, `client/src/pages/ProductDetailPage.jsx`, `client/src/components/Navbar.jsx`, `client/src/pages/SubscribePage.jsx`. Built the product browsing experience including live search, filter and sort functionality. Designed and implemented the navbar, product card layouts, product detail page UI and Subscribe membership tiers page. Actively contributed to the team's UI/UX design process including designing the product cards, navbar and product detail layout in Figma. |
-| Khushi | UI/UX Design Lead, Frontend Development | `client/src/pages/ProfilePage.jsx`, `client/src/pages/ErrorPage.jsx`, `client/src/components/HomePage.jsx`, `client/src/components/LoadingSpinner.jsx`, `client/src/assets/screen1.svg`, `client/src/assets/screen2.svg`, `client/src/assets/screen3.svg`, `client/src/assets/screen4.svg`, `client/src/assets/1.png` through `10.png`. Led the overall UI/UX design direction for the application — coordinated the team's design contributions in Figma, ensured visual coherence across all pages and defined the design system including colour palette, typography and component styles. Built the landing animation, profile page including the membership points and tier tracking tab, error page and loading spinner. |
+| Khushi | UI/UX Design Lead, Frontend Development | `client/src/pages/ProfilePage.jsx`, `client/src/pages/ErrorPage.jsx`, `client/src/components/HomePage.jsx`, `client/src/components/LoadingSpinner.jsx`, `client/src/pages/OurStoryPage.jsx`, and all landing animation assets in `client/src/assets/`. Led the overall UI/UX design direction aligning all created Figma prototypes, defined the design system and built the scroll-driven landing animation used across the welcome and Our Story pages. |
 
 ---
 
 ## Design Process
 
-UI/UX design was a collaborative team effort coordinated by Khushi. The entire team contributed to the Figma prototype before development began, with Khushi ensuring visual coherence and consistency across all screens. The design process included:
+The entire team contributed to the Figma prototype before development began, with Khushi ensuring visual coherence and consistency across all screens. The design process included:
 
 - **Khushi** — led the overall design direction, defined the design system (colour palette, typography, component styles), created the landing animation concept and screen assets, and ensured all designs were cohesive
 - **Shraddha** — designed the product browsing experience, product cards, navbar and product detail page layouts
@@ -56,7 +56,8 @@ Provides a seamless online shopping experience for coffee enthusiasts to discove
 
 - User registration and login with JWT authentication
 - Role-based access control — customers and admins see different views
-- Landing animation on customer login
+- Scroll-driven landing animation on customer login
+- Our Story page with brand narrative animation
 - Browse and search products by name, roaster or origin
 - Filter products by weight variant (250g, 500g, 1kg)
 - Sort products by price and name
@@ -64,14 +65,13 @@ Provides a seamless online shopping experience for coffee enthusiasts to discove
 - Cart sidebar with live updates
 - Checkout confirmation page
 - User profile with editable name, email and password
+- Membership tiers page with Sipper, Brewer and Roaster tiers
+- Points system calculated from cart total — $1 spent = 1 pt
+- Membership tab on profile page showing points balance, current tier and progress to next tier
 - Admin dashboard with real-time stats
 - Admin product management — add, edit, delete products
 - View all customer carts in admin dashboard
 - Protected routes — unauthenticated users redirected to login
-- Membership tiers page with Sipper, Brewer and Roaster tiers
-- Points system calculated from cart total — $1 spent = 1 pt
-- Membership tab on profile page showing points balance, current tier and progress to next tier
-- Subscribe page links directly to membership tab on profile page
 
 ---
 
@@ -147,54 +147,70 @@ Client runs on `http://localhost:5173`
 
 ```
 ecommerce-app/
-├── client/                          # React frontend
+├── .gitignore                           # Root git ignore
+├── README.md                            # Project documentation
+├── db/
+│   └── products.json                    # Exported seed data (15 products)
+├── client/                              # React frontend
+│   ├── index.html                       # HTML entry point
+│   ├── vite.config.js                   # Vite configuration
+│   ├── package.json                     # Client dependencies
+│   ├── package-lock.json                # Client dependency lock file
+│   ├── public/
+│   │   └── favicon.svg                  # Browser tab icon
 │   └── src/
-│       ├── assets/                  # Images and SVGs
-│       ├── components/              # Reusable components
-│       │   ├── Navbar.jsx           # Main navigation bar
-│       │   ├── CartSidebar.jsx      # Slide-out cart panel
-│       │   ├── HomePage.jsx         # Landing animation
-│       │   ├── ProtectedRoute.jsx   # Auth route wrapper
-│       │   ├── LoadingSpinner.jsx   # Coffee bean loading animation
-│       │   ├── NoResults.jsx        # Empty search state
+│       ├── App.jsx                      # Routes and layout
+│       ├── api.js                       # Axios instance with JWT interceptor
+│       ├── index.css                    # Global styles and font imports
+│       ├── main.jsx                     # React entry point
+│       ├── assets/                      # Images and landing animation assets
+│       │   ├── coffee-bean.png          # Used in login, register and loading spinner
+│       │   ├── iced-coffee.png          # Used in 404 error page
+│       │   └── *.webp / *.png           # Scroll-driven landing animation assets
+│       ├── components/                  # Reusable components
+│       │   ├── Navbar.jsx               # Main navigation bar
+│       │   ├── CartSidebar.jsx          # Slide-out cart panel
+│       │   ├── HomePage.jsx             # Scroll-driven landing animation
+│       │   ├── ProtectedRoute.jsx       # Auth route wrapper
+│       │   ├── LoadingSpinner.jsx       # Coffee bean loading animation
+│       │   ├── NoResults.jsx            # Empty search state
 │       │   ├── AddEditProductModal.jsx  # Admin product form
 │       │   └── DeleteProductModal.jsx   # Admin delete confirmation
-│       ├── context/                 # Auth context
-│       │   ├── AuthContext.js       # Context definition
-│       │   ├── AuthProvider.jsx     # Context provider with localStorage persistence
-│       │   └── useAuth.js           # Custom hook
-│       ├── pages/
-│       │   ├── LoginPage.jsx        # Login with JWT
-│       │   ├── RegisterPage.jsx     # New user registration
-│       │   ├── ProductsPage.jsx     # Product grid with search and filter
-│       │   ├── ProductDetailPage.jsx # Single product view
-│       │   ├── CartPage.jsx         # Full cart view
-│       │   ├── CheckoutPage.jsx     # Order confirmation
-│       │   ├── ProfilePage.jsx      # User profile management
-│       │   ├── AdminPage.jsx        # Admin dashboard
-│       │   ├── SubscribePage.jsx    # Membership tiers and points system
-│       │   └── ErrorPage.jsx        # 404 page
-│       ├── App.jsx                  # Routes and layout
-│       ├── api.js                   # Axios instance with JWT interceptor
-│       └── main.jsx                 # React entry point
-├── server/                          # Express backend
-│   ├── middleware/
-│   │   ├── authMiddleware.js        # JWT verification
-│   │   └── adminMiddleware.js       # Admin role check
-│   ├── models/
-│   │   ├── User.js                  # User schema
-│   │   ├── Product.js               # Product schema
-│   │   └── Cart.js                  # Cart schema with sub-schema
-│   ├── routes/
-│   │   ├── authRoutes.js            # POST /register, /login
-│   │   ├── userRoutes.js            # GET, PUT, DELETE /users
-│   │   ├── productRoutes.js         # CRUD /products
-│   │   └── cartRoutes.js            # CRUD /cart
-│   ├── index.js                     # Server entry point
-│   ├── seed.js                      # Database seeder (15 products)
-│   └── .env                         # Environment variables (not committed)
-└── db/
-└── products.json                # Exported seed data
+│       ├── context/                     # Auth context
+│       │   ├── AuthContext.js           # Context definition
+│       │   ├── AuthProvider.jsx         # Context provider with localStorage persistence
+│       │   └── useAuth.js               # Custom hook
+│       └── pages/
+│           ├── LoginPage.jsx            # Login with JWT
+│           ├── ProductsPage.jsx         # Product grid with search and filter
+│           ├── ProductDetailPage.jsx    # Single product view
+│           ├── CartPage.jsx             # Full cart view
+│           ├── CheckoutPage.jsx         # Order confirmation
+│           ├── ProfilePage.jsx          # User profile and membership management
+│           ├── AdminPage.jsx            # Admin dashboard
+│           ├── SubscribePage.jsx        # Membership tiers and points system
+│           ├── OurStoryPage.jsx         # Our Story with brand animation
+│           ├── ErrorPage.jsx            # 404 page
+│           └── RegisterPage.jsx         # New user registration
+└── server/                              # Express backend
+    ├── .env.example                     # Example environment variables
+    ├── .gitignore                       # Server git ignore
+    ├── index.js                         # Server entry point
+    ├── Seed.js                          # Database seeder (15 products)
+    ├── package.json                     # Server dependencies
+    ├── package-lock.json                # Server dependency lock file
+    ├── middleware/
+    │   ├── authMiddleware.js            # JWT verification
+    │   └── adminMiddleware.js           # Admin role check
+    ├── models/
+    │   ├── User.js                      # User schema
+    │   ├── Product.js                   # Product schema
+    │   └── Cart.js                      # Cart schema with sub-schema
+    └── routes/
+        ├── authRoutes.js                # POST /register, /login
+        ├── userRoutes.js                # GET, PUT, DELETE /users
+        ├── productRoutes.js             # CRUD /products
+        └── cartRoutes.js                # CRUD /cart
 ```
 
 ---
@@ -226,8 +242,6 @@ ecommerce-app/
 
 - Checkout flow is a confirmation page only — no real payment processing
 - Order history shows current cart items rather than completed orders
-- Google and Facebook login buttons are UI placeholders only
-- Our Story page is a placeholder — content not yet implemented
 - Subscribe/membership points system is calculated from current cart total only, not from completed order history
 
 ---
