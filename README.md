@@ -1,6 +1,6 @@
 # Espresso Yourself ☕
 
-A full-stack e-commerce web application for purchasing Australian specialty coffee beans online. Built as a group assignment for 32130 Internet Programming, University of Technology Sydney.
+A full-stack e-commerce web application for purchasing Australian specialty coffee beans online. Built as a group assignment for 32516 Internet Programming, University of Technology Sydney.
 
 ---
 
