@@ -47,6 +47,7 @@ function CartSidebar({ isOpen, onClose }) {
   }, [isOpen, token])
 
   useEffect(() => {
+    // lock body scroll while sidebar is open to prevent background page scrolling
     document.body.style.overflow = isOpen ? 'hidden' : 'unset'
     return () => { document.body.style.overflow = 'unset' }
   }, [isOpen])
@@ -101,7 +102,7 @@ function CartSidebar({ isOpen, onClose }) {
     </>
   )
 
-  // show error toast for 3 seconds
+  // transient toast for non-critical errors — cart failures don't block the user from shopping
   const showToast = (message) => {
     setToast(message)
     setTimeout(() => setToast(''), 3000)

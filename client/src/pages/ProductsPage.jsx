@@ -44,10 +44,13 @@ function ProductsPage() {
 
   // debounced search
   useEffect(() => {
+    // spinner only appears after 500ms so fast connections don't see a flicker
     const spinnerTimer = setTimeout(() => setShowSpinner(true), 500)
+    // 300ms debounce — avoids an API call on every keystroke during live search
     const timer = setTimeout(async () => {
       setLoading(true)
       try {
+        // search is server-side to filter the dataset; sort and filter run client-side on the result
         const query = searchTerm ? `?search=${searchTerm}` : ''
         const res = await api.get(`/products${query}`)
         setProducts(res.data)

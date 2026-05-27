@@ -20,6 +20,7 @@ import { useState } from 'react'
 import { AuthContext } from './AuthContext'
 
 export function AuthProvider({ children }) {
+  // initialise from localStorage so auth state survives page reloads without a network request
   const [user, setUser] = useState(
     JSON.parse(localStorage.getItem('user')) || null
   )
@@ -28,6 +29,7 @@ export function AuthProvider({ children }) {
   )
 
   const login = (userData, tokenData) => {
+    // update both React state and localStorage together so they never go out of sync
     setUser(userData)
     setToken(tokenData)
     localStorage.setItem('token', tokenData)

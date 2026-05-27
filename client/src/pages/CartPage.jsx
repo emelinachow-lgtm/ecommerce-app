@@ -43,6 +43,7 @@ function CartPage() {
     if (newQty < 1) return
     try {
       await api.put(`/cart/${itemId}`, { quantity: newQty })
+      // update local state directly instead of re-fetching — keeps the UI feeling instant
       setCart(prev => ({
         ...prev,
         items: prev.items.map(item =>

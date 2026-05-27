@@ -75,6 +75,24 @@ Provides a seamless online shopping experience for coffee enthusiasts to discove
 
 ---
 
+## Technical Design Rationale
+
+**`useState` over `useReducer`** — each piece of state (cart items, loading, search term, sort/filter) transitions independently and simply. `useReducer` is better suited to complex interdependent state machines, which this app doesn't have.
+
+**Context API over Redux/Zustand** — auth state (a user object and JWT string) is read widely but changes only on login and logout. Context API is designed for exactly this pattern and avoids unnecessary third-party boilerplate. The context is split into three files (`AuthContext.js`, `AuthProvider.jsx`, `useAuth.js`) to separate the definition, logic, and consumption.
+
+**JWT in localStorage** — auth state is initialised directly from localStorage so it survives page reloads without a network request. The token is attached to every request via an Axios interceptor in `api.js`, so individual components never handle it directly.
+
+**Debounced live search** — a 300ms debounce prevents an API call on every keystroke. Search is server-side (MongoDB handles text matching via `?search=`), while sort and variant filtering run client-side on the returned results — no extra network cost for operations on a small dataset.
+
+**Optimistic cart updates** — after a successful API call, local cart state is updated directly rather than re-fetching the whole cart, keeping quantity changes and removals feeling instant.
+
+**Toast vs persistent errors** — `CartSidebar` uses a transient 3-second toast for cart operation failures (non-blocking, user can keep shopping). `CartPage` uses a persistent error state for the initial load failure, since the page can't render without data.
+
+**Dual-layer route protection** — protected routes check `token` and `user.role` on the frontend via `ProtectedRoute.jsx`, and every sensitive endpoint is independently protected by `authMiddleware.js` and `adminMiddleware.js` on the backend.
+
+---
+
 ## Getting Started
 
 ### Prerequisites
